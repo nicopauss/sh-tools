@@ -1,0 +1,306 @@
+let s:vimrcdir = fnamemodify(resolve($MYVIMRC), ':h')
+let &rtp = "$HOME/.vim,".s:vimrcdir ."/vim,$VIM/vimfiles,$VIMRUNTIME"
+
+" Plugins
+call plug#begin("~/.vim/plugged")
+
+Plug 'scrooloose/nerdtree'
+Plug 'kien/ctrlp.vim'
+Plug 'scrooloose/syntastic'
+Plug 'bling/vim-airline'
+Plug 'jlanzarotta/bufexplorer'
+Plug 'tpope/vim-fugitive'
+Plug 'vim-scripts/a.vim'
+Plug 'junegunn/vim-easy-align'
+Plug 'Valloric/YouCompleteMe', { 'do': './install.sh --clang-completer' }
+
+call plug#end()
+
+" Various options
+filetype plugin on
+filetype plugin indent on
+
+syntax on
+set encoding=utf-8
+set nocompatible
+set backspace=indent,eol,start
+
+set incsearch
+set hlsearch
+
+set autoindent
+set hidden
+set esckeys
+set listchars=eol:\ ,tab:\ \ ,trail:-,extends:>,precedes:<,nbsp:¤
+set list
+
+set ruler
+set modeline
+set modelines=5
+set foldmethod=marker
+set lazyredraw
+
+set report=0
+set laststatus=2
+set foldmethod=marker
+
+let mapleader = "\<Space>"
+let maplocalleader = ","
+
+" Restore cursor position
+au BufReadPost *
+    \ if line("'\"") > 0 && line("'\"") <= line("$") |
+    \   exe "normal g`\"" |
+    \ endif
+
+" Syntax highlighting for LESS files
+au BufRead,BufNewFile *.less setfiletype css
+
+" Undo and tags
+set cpoptions-=C
+set tags=tags;/,.tags;/,TAG;/
+if version >= 703
+    set undofile                          " to activate undofile feature
+    set undodir=~/.cache/vim/undo,.       " to store undo files in same a specific dir
+    au BufWritePre tmp* setl noundofile   " to ignore file into /tmp
+endif
+
+" Compilation
+set makeprg=LC_ALL=C\ make\ MONOCHROME=1
+set grepprg=git\ grep\ -H\ -n
+
+" Patch errorformat to properly catch filenames in Z output
+set errorformat^=:%*[\ ]%f:%l:\ %m
+
+" Code formatting
+set tabstop=4
+set softtabstop=4
+set expandtab
+set textwidth=0
+set shiftwidth=4
+
+set cinoptions=
+set cinoptions+=L0.5s          " align labels at 0.5 shiftwidth
+set cinoptions+=:0.5s,=0.5s    " same for case labels and code following labels
+set cinoptions+=g0.5s,h0.5s    " same for C++ stuff
+set cinoptions+=t0             " type on the line before the function is not indented
+set cinoptions+=(0,Ws          " indent in functions ( ... ) when it breaks
+set cinoptions+=m1             " align the closing ) properly
+set cinoptions+=j1             " java/javascript -> fixes blocks
+set cinoptions+=l0.5s          " align code after label ignoring braces.
+
+" Doxygen
+au! Syntax {cpp,c,d,javascript}
+au Syntax {cpp,c,d,javascript} runtime syntax/doxygen.vim
+let g:doxygen_end_punctuation='[.?!]'
+
+" {{{ Mapping
+
+" change directory to the file being edited
+nnoremap ,cd :cd %:p:h<CR>
+
+" forbid non-breakable spaces
+imap   <Space>
+
+" next compilation error
+map +        :cnext<cr>
+map <kPlus>  :cnext<CR>
+" previous compilation error
+map -        :cprev<cr>
+map <kMinus> :cprev<CR>
+" next syntastic error
+map <S-Right> :lnext<cr>
+" previous syntastic error
+map <S-Left> :lprev<cr>
+
+" follow tag
+map <F2> <C-]>
+
+" bufExplorer
+map <F3> <Leader>bs
+
+" grep on the current word
+map <F4> :gr! -w <cword><cr>
+
+set pastetoggle=<F5>
+
+nnoremap <F6> :nohlsearch<CR>
+
+" spell check
+map <F8> :setlocal spell! spelllang=en_us<CR>
+
+" horizontal split + next buffer
+map <F9> :split<cr>:bn<cr>
+" vertical split + next buffer
+map <F10> :vsplit<cr>:bn<cr>
+
+" make
+noremap  <F11> :make!<cr><cr>
+inoremap <F11> <esc>:make!<cr><cr>
+
+" remove trailing spaces
+map <F12> mcHmh:%s/ \+$//ge<cr>'hzt`c
+
+" move to left buffer
+map  <C-Left>   <C-w><Left>
+map! <C-Left>   <Esc> <C-w><Left>
+" move to right buffer
+map  <C-Right>  <C-w><Right>
+map! <C-Right>  <Esc> <C-w><Right>
+" move to buffer above
+map  <C-Up>     <C-w><Up>
+map! <C-Up>     <Esc> <C-w><Up>
+" move to buffer below
+map  <C-Down>   <C-w><Down>
+map! <C-Down>   <Esc> <C-w><Down>
+
+" scroll up
+map <S-Up> <C-Y>
+" scroll down
+map <S-Down> <C-E>
+
+" mouse
+set mouse+=a
+
+" better grep
+command! -nargs=+ Ggr execute "silent Ggrep!" string(<q-args>) | cw | redraw!
+map <F4> :Ggr <cword><cr>
+
+" close current buffer and move to next
+command! WW bp|bd #
+nmap <C-b> :WW<CR>
+
+" use x11 copy buffer
+if has('unnamedplus')
+  set clipboard=unnamed,unnamedplus
+endif
+
+" file completion
+set wildmode=longest,list,full
+set wildmenu
+set completeopt-=preview
+
+" jump at end of paste
+vnoremap <silent> y y`]
+vnoremap <silent> p p`]
+nnoremap <silent> p p`]
+
+" vp doesn't replace paste buffer
+function! RestoreRegister()
+   let @" = s:restore_reg
+   return ''
+endfunction
+function! s:Repl()
+   let s:restore_reg = @"
+   return "p@=RestoreRegister()\<cr>"
+endfunction
+vmap <silent> <expr> p <sid>Repl()
+
+" quick select pasted text
+noremap gV `[v`]
+
+" }}}
+
+" Overlength
+if version >= 703
+    set cc=+1
+    hi ColorColumn cterm=none ctermfg=none ctermbg=darkgray
+else
+    au FileType c,cpp match OverLength /\%79v.\+/
+    hi OverLength cterm=none ctermfg=none ctermbg=darkblue
+endif
+
+" NERDTree
+"autocmd vimenter * NERDTree
+map <C-n> :NERDTreeToggle<CR>
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+" Syntastic (syntax checker)
+
+" XXX Syntastic fails to find your header files? Try 'make syntastic' in the
+"     root directory of your repository.
+
+let g:syntastic_mode_map = { 'mode': 'active',
+                           \ 'passive_filetypes': [ ] }
+let g:syntastic_ignore_files = ['^/usr/include/']
+let g:syntastic_auto_loc_list=1
+let g:syntastic_auto_jump=0
+let g:syntastic_check_on_open=1
+let g:syntastic_silent_make=0
+
+let g:syntastic_c_compiler = 'clang'
+let g:syntastic_c_compiler_options = ''
+let g:syntastic_c_include_dirs = [ ]
+let g:syntastic_c_no_include_search = 1
+let g:syntastic_c_no_default_include_dirs = 1
+
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = ''
+let g:syntastic_cpp_include_dirs = [ ]
+let g:syntastic_cpp_no_include_search = 1
+let g:syntastic_cpp_no_default_include_dirs = 1
+
+let g:syntastic_python_checkers = ['pylint']
+
+" let :E :Explore (syntastic defines an Errors command which makes :E
+" ambiguous)
+command! -nargs=* -bar -bang -count=0 -complete=dir E Explore <args>
+
+" a.vim
+let g:alternateRelativeFiles   = 1
+let g:alternateExtensions_blk  = "h"
+let g:alternateExtensions_blkk = "h"
+let g:alternateExtensions_h    = "c,cpp,cxx,cc,CC,blk,blkk"
+
+" ctrlp
+let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files && git submodule -q foreach ''for file in $(git ls-files); do echo $name/$file; done''']
+
+" YCM
+let g:ycm_show_diagnostics_ui = 0
+let g:ycm_confirm_extra_conf = 0
+let g:ycm_register_as_syntastic_checker = 0
+let g:ycm_global_ycm_extra_conf = s:vimrcdir.'/../conf/ycm_default_conf.py'
+
+" EasyAlign
+vmap <Enter> <Plug>(EasyAlign)
+nmap <Leader>a <Plug>(EasyAlign)
+
+" Tmux
+if &term =~ '^screen'
+    " tmux knows the extended mouse mode
+    set ttymouse=xterm2
+    " tmux will send xterm-style keys when xterm-keys is on
+    execute "set <xUp>=\e[1;*A"
+    execute "set <xDown>=\e[1;*B"
+    execute "set <xRight>=\e[1;*C"
+    execute "set <xLeft>=\e[1;*D"
+endif
+
+" Colors
+hi Comment      cterm=none       ctermfg=blue       ctermbg=none
+hi doxygenBrief cterm=none       ctermfg=cyan       ctermbg=none
+hi Folded       cterm=none       ctermfg=brown      ctermbg=none
+
+hi Visual       cterm=reverse    ctermfg=none       ctermbg=none
+hi IncSearch    cterm=none       ctermfg=red        ctermbg=none
+hi Search       cterm=underline  ctermfg=red        ctermbg=none
+
+hi StatusLine   cterm=none       ctermfg=white      ctermbg=blue
+hi StatusLineNc cterm=none       ctermfg=black      ctermbg=white
+hi WildMenu     cterm=none       ctermfg=white      ctermbg=none
+hi VertSplit    cterm=none       ctermfg=darkgray   ctermbg=none
+hi NonText      cterm=none       ctermfg=darkgray   ctermbg=none
+
+hi MatchParen   cterm=underline  ctermfg=none       ctermbg=none
+hi Pmenu        cterm=none       ctermfg=gray       ctermbg=black
+hi PmenuSel     cterm=none       ctermfg=black      ctermbg=gray
+hi PmenuSbar    cterm=none       ctermfg=blue       ctermbg=blue
+hi PmenuThumb   cterm=none       ctermfg=gray       ctermbg=gray
+
+hi SpellBad     cterm=underline  ctermfg=lightred   ctermbg=none
+hi SpellCap     cterm=none       ctermfg=lightred   ctermbg=none
+hi SpellLocal   cterm=underline  ctermfg=darkgreen  ctermbg=none
+hi SpellRare    cterm=none       ctermfg=none       ctermbg=none
+
+hi javaScriptTpl     cterm=none  ctermfg=darkgreen  ctermbg=none
+hi javaScriptTplMark cterm=none  ctermfg=magenta    ctermbg=none

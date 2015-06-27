@@ -1,0 +1,3 @@
+[submodule "dotfiles/vim/autoload"]
+	path = dotfiles/vim/autoload
+	url = https://github.com/junegunn/vim-plug.git

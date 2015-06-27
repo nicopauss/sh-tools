@@ -1,0 +1,9 @@
+*.pyo
+*.pyc
+.*.sw?
+.tags
+.srcfiles
+.syntastic*
+*~
+TAGS
+Thumbs.db
