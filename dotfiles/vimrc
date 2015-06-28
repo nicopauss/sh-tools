@@ -44,9 +44,6 @@ set report=0
 set laststatus=2
 set foldmethod=marker
 
-let mapleader = "\<Space>"
-let maplocalleader = ","
-
 " Restore cursor position
 au BufReadPost *
     \ if line("'\"") > 0 && line("'\"") <= line("$") |
