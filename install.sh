@@ -12,11 +12,11 @@ e_success()  { echo " \033[1;32m✔\033[0m  $@"; }
 
 install_script()
 {
-    local found_str=$(grep -F "$MAGIC_STR" "$0" 2>/dev/null)
+    local found_str=$(grep -F "$MAGIC_STR" "$0" 2>/dev/null || echo "")
 
     if [ -z "$found_str" ]; then
         if [ ! -d "$SH_TOOLS_DIR" ]; then
-            git clone "$GITHUB_URL" "$SH_TOOLS_DIR"
+            git clone  --recursive "$GITHUB_URL" "$SH_TOOLS_DIR"
         fi
     else
         SH_TOOLS_DIR=$(cd "$(dirname "$0")"; pwd)
@@ -39,7 +39,7 @@ install_vimrc()
         return 0
     fi
 
-    found_str=$(grep -F "$vimrc_script" "$home_vimrc" 2>/dev/null)
+    found_str=$(grep -F "$vimrc_script" "$home_vimrc" 2>/dev/null || echo "")
 
     if [ -n "$found_str" ]; then
         e_success "Vimrc already installed"
