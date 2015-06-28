@@ -1,4 +1,4 @@
-let s:vimrcdir = fnamemodify(resolve($MYVIMRC), ':h')
+let s:vimrcdir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let &rtp = "$HOME/.vim,".s:vimrcdir ."/vim,$VIM/vimfiles,$VIMRUNTIME"
 
 " Plugins
