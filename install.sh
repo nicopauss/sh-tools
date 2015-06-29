@@ -5,7 +5,8 @@ set -e
 MAGIC_STR="__sh-tools__install_sh__"
 SH_TOOLS_DIR="$HOME/.sh-tools"
 GITHUB_URL="https://github.com/nicopauss/sh-tools.git"
-BACKUP_DIR="$HOME/.sh-tools-bck"
+DATE_TIME_STR=$(date "+%Y%m%d_%k%M%S")
+BACKUP_DIR="$HOME/.sh-tools-bck-$DATE_TIME_STR"
 
 e_header()   { echo "\n\033[1m$@\033[0m"; }
 e_success()  { echo " \033[1;32m✔\033[0m  $@"; }
