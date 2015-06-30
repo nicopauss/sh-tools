@@ -184,12 +184,20 @@ nnoremap <silent> p p`]
 
 " vp doesn't replace paste buffer
 function! RestoreRegister()
-   let @" = s:restore_reg
-   return ''
+    if has('unnamedplus')
+        let @+ = s:restore_reg
+    else
+        let @" = s:restore_reg
+    endif
+    return ''
 endfunction
 function! s:Repl()
-   let s:restore_reg = @"
-   return "p@=RestoreRegister()\<cr>"
+    if has('unnamedplus')
+        let s:restore_reg = @+
+    else
+        let s:restore_reg = @"
+    endif
+    return "p@=RestoreRegister()\<cr>"
 endfunction
 vmap <silent> <expr> p <sid>Repl()
 
