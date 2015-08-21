@@ -287,13 +287,14 @@ if &term =~ '^screen'
 endif
 
 " Colors
+set background=light
 hi Comment      cterm=none       ctermfg=blue       ctermbg=none
 hi doxygenBrief cterm=none       ctermfg=cyan       ctermbg=none
 hi Folded       cterm=none       ctermfg=brown      ctermbg=none
 
 hi Visual       cterm=reverse    ctermfg=none       ctermbg=none
-hi IncSearch    cterm=none       ctermfg=red        ctermbg=none
-hi Search       cterm=underline  ctermfg=red        ctermbg=none
+hi Search       cterm=none       ctermfg=black      ctermbg=lightblue
+hi IncSearch    cterm=underline  ctermfg=white      ctermbg=darkblue
 
 hi StatusLine   cterm=none       ctermfg=white      ctermbg=blue
 hi StatusLineNc cterm=none       ctermfg=black      ctermbg=white
@@ -302,8 +303,8 @@ hi VertSplit    cterm=none       ctermfg=darkgray   ctermbg=none
 hi NonText      cterm=none       ctermfg=darkgray   ctermbg=none
 
 hi MatchParen   cterm=underline  ctermfg=none       ctermbg=none
-hi Pmenu        cterm=none       ctermfg=gray       ctermbg=black
-hi PmenuSel     cterm=none       ctermfg=black      ctermbg=gray
+hi Pmenu        cterm=none       ctermfg=white      ctermbg=darkgray
+hi PmenuSel     cterm=none       ctermfg=white      ctermbg=gray
 hi PmenuSbar    cterm=none       ctermfg=blue       ctermbg=blue
 hi PmenuThumb   cterm=none       ctermfg=gray       ctermbg=gray
 
