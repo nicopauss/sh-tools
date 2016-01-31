@@ -58,10 +58,39 @@ install_vimrc()
     fi
 }
 
+install_tmux()
+{
+    local home_tmuxconf="$HOME/.tmux.conf"
+    local tmuxconf_path="$SH_TOOLS_DIR/dotfiles/tmux.conf"
+    local tmuxconf_script="source-file $tmuxconf_path"
+    local found_str=''
+
+    e_header "Installing tmux"
+
+    if [ ! -e "$home_tmux" ]; then
+        echo "$tmuxconf_script" > "$home_tmuxconf"
+        e_success "No previous tmux found, installed new one"
+        return 0
+    fi
+
+    found_str=$(grep -F "$tmuxconf_script" "$home_tmuxconf" 2>/dev/null || echo "")
+
+    if [ -n "$found_str" ]; then
+        e_success "Tmux already installed"
+        return 0
+    fi
+
+    mkdir -p "$BACKUP_DIR"
+    mv "$home_tmuxconf" "$BACKUP_DIR"
+    echo "$tmuxconf_script" > "$home_tmuxconf"
+    e_success "Backing up tmux to '$BACKUP_DIR', installed new one"
+}
+
 main()
 {
     install_script
     install_vimrc
+    install_tmux
 }
 
 main
