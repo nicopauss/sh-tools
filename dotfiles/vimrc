@@ -5,13 +5,14 @@ let &rtp = "$HOME/.vim,".s:vimrcdir ."/vim,$VIM/vimfiles,$VIMRUNTIME"
 call plug#begin("~/.vim/plugged")
 
 Plug 'scrooloose/nerdtree'
-Plug 'kien/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 Plug 'scrooloose/syntastic'
 Plug 'bling/vim-airline'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/a.vim'
 Plug 'junegunn/vim-easy-align'
+Plug 'shawncplus/phpcomplete.vim'
 Plug 'Valloric/YouCompleteMe', { 'do': './install.sh --clang-completer' }
 
 call plug#end()
