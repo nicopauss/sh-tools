@@ -274,7 +274,7 @@ nmap <Leader>a <Plug>(EasyAlign)
 " Tmux
 if &term =~ '^screen'
     " tmux knows the extended mouse mode
-    set ttymouse=xterm2
+    set ttymouse=sgr
     " tmux will send xterm-style keys when xterm-keys is on
     execute "set <xUp>=\e[1;*A"
     execute "set <xDown>=\e[1;*B"
