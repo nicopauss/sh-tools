@@ -3,6 +3,9 @@ syn keyword cStatement p_delete p_new p_new_raw p_clear p_realloc
 syn keyword cStatement mp_delete mp_new mp_new_raw
 syn keyword cStatement p_dup p_dupstr p_dupz
 syn keyword cStatement t_new t_new_raw t_new_extra t_fmt t_scope
+syn keyword cStatement r_new r_new_raw r_newframe r_seal r_release
+
+syn keyword cStorageClass nullable nonnull null_unspecified
 
 syn keyword isGlobal   _G
 syn match   isGlobal "\<[a-zA-Z_][a-zA-Z0-9_]*_g\>"

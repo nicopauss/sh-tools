@@ -21,6 +21,13 @@ au FileType javascript setlocal cindent cinoptions-=L0.5s noignorecase textwidth
 " PHP
 au FileType php setlocal et fo+=ro indentexpr= cin
 let php_noShortTags=1
+autocmd BufEnter *.php :syntax sync fromstart
+
+" Syntax highlighting for LESS files
+au BufRead,BufNewFile *.less setf css
+
+" Html
+au FileType html setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 " Python
 au FileType python setlocal textwidth=78
