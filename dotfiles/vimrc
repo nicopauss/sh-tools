@@ -13,6 +13,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/a.vim'
 Plug 'junegunn/vim-easy-align'
 Plug 'shawncplus/phpcomplete.vim'
+Plug 'terryma/vim-expand-region'
 Plug 'Valloric/YouCompleteMe', { 'do': './install.sh --clang-completer' }
 
 call plug#end()
@@ -270,6 +271,10 @@ let g:ycm_global_ycm_extra_conf = s:vimrcdir.'/../conf/ycm_default_conf.py'
 " EasyAlign
 vmap <Enter> <Plug>(EasyAlign)
 nmap <Leader>a <Plug>(EasyAlign)
+
+" Expand region
+vmap v <Plug>(expand_region_expand)
+vmap <C-v> <Plug>(expand_region_shrink)
 
 " Tmux
 if &term =~ '^screen'
