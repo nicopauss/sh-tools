@@ -56,6 +56,9 @@ install_vimrc()
     else
         e_success "Backing up vimrc to '$BACKUP_DIR', installed new one"
     fi
+
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 }
 
 install_tmux()
