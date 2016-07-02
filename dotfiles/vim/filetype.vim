@@ -29,6 +29,9 @@ au BufRead,BufNewFile *.less setf css
 " Html
 au FileType html setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
+" Smarty
+au FileType smarty setlocal tabstop=2 softtabstop=2 shiftwidth=2
+
 " Python
 au FileType python setlocal textwidth=78
 let python_highlight_all=1
