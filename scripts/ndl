@@ -1,0 +1,236 @@
+#!/bin/bash
+
+set -e
+set -u
+
+trap "{ exit -1; }" SIGINT
+
+readonly PROGNAME=$(basename $0)
+readonly PROGDIR=$(readlink $(dirname $0))
+
+readonly DEFAULT_NB_PARALLEL_DL=5
+readonly DEFAULT_NB_TRIES=5
+readonly SAVE_FILE_NAME=".ndl_links"
+
+eexit() {
+    echo "$@"
+    exit 1
+}
+
+trim_string() {
+    sed -E -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*$//g' <<< "$@"
+}
+
+usage() {
+    cat """
+usage: $PROGNAME [options] links
+
+Download list of links using axel, aria2 or wget.
+
+OPTIONS:
+    -x --axel           Use axel
+    -r --aria           Use aria2
+    -w --wget           Use wget
+    -n --nosave         Do not save links
+    -h --help           Print this help
+    -p n --parallel n   Use n parallel downloads, default $DEFAULT_NB_PARALLEL_DL
+    -t n --tries n      Use n tries, default $DEFAULT_NB_TRIES
+
+"""
+}
+
+cmdline() {
+    # got this idea from here:
+    # http://kirk.webfinish.com/2009/10/bash-shell-script-to-use-getopts-with-gnu-style-long-positional-parameters/
+    local use_axel=
+    local use_aria=
+    local use_wget=
+    local nosave=
+    local nb_parallel_dl="$DEFAULT_NB_PARALLEL_DL"
+    local nb_tries="$DEFAULT_NB_TRIES"
+
+    local args=""
+    for arg ; do
+        local delim=""
+        case "$arg" in
+            #translate --gnu-long-options to -g (short options)
+            --axel)           args="${args}-x ";;
+            --aria)              args="${args}-r ";;
+            --wget)           args="${args}-w ";;
+            --nosave)         args="${args}-n ";;
+            --help)           args="${args}-h ";;
+            --parallel)       args="${args}-p ";;
+            --tries)          args="${args}-t ";;
+            #pass through anything else
+            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
+                args="${args}${delim}${arg}${delim} ";;
+        esac
+    done
+
+    #Reset the positional parameters to the short options
+    eval set -- $args
+
+    while getopts "xrwnhp:t:" OPTION
+    do
+         case $OPTION in
+         x)
+             [[ $use_aria || $use_wget ]] \
+                && eexit "Option -x, -r and -w are exclusive"
+             use_axel=1
+             ;;
+         r)
+             [[ $use_axel || $use_wget ]] \
+                && eexit "Option -x, -r and -w are exclusive"
+             use_aria=1
+             ;;
+         w)
+             [[ $use_aria || $use_axel ]] \
+                && eexit "Option -x, -r and -w are exclusive"
+             use_wget=1
+             ;;
+         n)
+             nosave=1
+             ;;
+         h)
+             usage
+             exit 0
+             ;;
+         p)
+             nb_parallel_dl="$OPTARG"
+             ;;
+         t)
+             nb_retry="$OPTARG"
+             ;;
+        esac
+    done
+
+
+    readonly USE_AXEL=$use_axel
+    readonly USE_ARIA=$use_aria
+    readonly USE_WGET=$use_wget
+    readonly NOSAVE=$nosave
+    readonly NB_PARALLEL_DL="$nb_parallel_dl"
+    readonly NB_TRIES="$nb_tries"
+
+    shift $((OPTIND-1))
+    readonly ARGS_LINKS="$@"
+}
+
+create_links() {
+    local str=""
+
+    # Read input line by line
+    if [ ! -t 0 ] ; then
+        while true ; do
+            read -r || break
+            str="$str"$'\n'"$REPLY"
+        done
+    fi
+
+    str="$str"$'\n'"$@"
+
+    readonly INPUT_LINKS=$(trim_string "$str")
+}
+
+check_dl_command() {
+    local which_axel=$(which axel)
+    local which_aria=$(which aria2c)
+    local which_wget=$(which wget)
+
+    if [[ $USE_AXEL ]]; then
+         [[ $which_axel ]] \
+            || eexit "Axel not found"
+        readonly DL_FUNCTION="dl_link_axel"
+    elif [[ $USE_ARIA ]]; then
+         [[ $which_aria ]] \
+            || eexit "Aria2 not found"
+        readonly DL_FUNCTION="dl_link_aria"
+    elif [[ $USE_WGET ]]; then
+         [[ $which_wget ]] \
+            || eexit "Wget not found"
+        readonly DL_FUNCTION="dl_link_wget"
+    elif [[ $which_axel ]]; then
+        readonly DL_FUNCTION="dl_link_axel"
+    elif [[ $which_aria ]]; then
+        readonly DL_FUNCTION="dl_link_aria"
+    elif [[ $which_wget ]]; then
+        readonly DL_FUNCTION="dl_link_wget"
+    else
+        echo
+        eexit "Unable to find a valid download command"
+    fi
+}
+
+save_links() {
+    echo "$INPUT_LINKS" > "$SAVE_FILE_NAME"
+    readonly LINKS="$INPUT_LINKS"
+}
+
+read_links() {
+    readonly LINKS=$(cat "$SAVE_FILE_NAME" 2>/dev/null)
+}
+
+url_decode() {
+    perl -MURI::Escape -e 'print uri_unescape($ARGV[0])' "$@"
+}
+
+dl_link_axel() {
+    local link="$@"
+    end_of_url=${link##*/}
+    file_name=$(url_decode "${end_of_url%%\?*}")
+    if [ -f "${file_name}" ] && ! [ -f "${file_name}.st" ] ; then
+        continue
+    fi
+
+    axel -a -n "$NB_PARALLEL_DL" "$link"
+}
+
+dl_link_aria() {
+    local link="$@"
+    end_of_url=${link##*/}
+    file_name=$(url_decode "${end_of_url%%\?*}")
+    if [ -f "${file_name}" ] && ! [ -f "${file_name}.aria2" ] ; then
+        continue
+    fi
+
+    aria2c --continue=true -x "$NB_PARALLEL_DL" -j "$NB_PARALLEL_DL" --file-allocation=none --max-tries="$NB_TRIES" --max-file-not-found="$NB_TRIES" "$link"
+}
+
+dl_link_wget() {
+    local link="$@"
+    if ! wget --continue --tries="$NB_TRIES" "$link"; then
+        wget --tries="$NB_TRIES" "$link"
+    fi
+}
+
+dl_links() {
+    local line=
+    while IFS="\n" read -r line ; do
+        line=$(trim_string "$line")
+        if [ -z "$line" ] || [[ "$line" == \#* ]] ; then
+            continue
+        fi
+
+        "$DL_FUNCTION" "$line"
+
+    done <<< "$LINKS";
+}
+
+main() {
+    cmdline "$@"
+    create_links "$ARGS_LINKS"
+    check_dl_command
+    if [[ -z "$NOSAVE" ]]; then
+        if [[ "$INPUT_LINKS" ]]; then
+            save_links
+        else
+            read_links
+            [[ -z "$LINKS" ]] && (usage ; exit 0)
+        fi
+    fi
+    dl_links
+}
+
+main "$@"
+
+
