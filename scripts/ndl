@@ -28,47 +28,24 @@ usage: $PROGNAME [options] links
 Download list of links using axel, aria2 or wget.
 
 OPTIONS:
-    -x --axel           Use axel
-    -r --aria           Use aria2
-    -w --wget           Use wget
-    -n --nosave         Do not save links
-    -h --help           Print this help
-    -p n --parallel n   Use n parallel downloads, default $DEFAULT_NB_PARALLEL_DL
-    -t n --tries n      Use n tries, default $DEFAULT_NB_TRIES
+    -x    Use axel
+    -r    Use aria2
+    -w    Use wget
+    -n    Do not save links
+    -h    Print this help
+    -p n  Use n parallel downloads, default $DEFAULT_NB_PARALLEL_DL
+    -t n  Use n tries, default $DEFAULT_NB_TRIES
 
 """
 }
 
 cmdline() {
-    # got this idea from here:
-    # http://kirk.webfinish.com/2009/10/bash-shell-script-to-use-getopts-with-gnu-style-long-positional-parameters/
     local use_axel=
     local use_aria=
     local use_wget=
     local nosave=
     local nb_parallel_dl="$DEFAULT_NB_PARALLEL_DL"
     local nb_tries="$DEFAULT_NB_TRIES"
-
-    local args=""
-    for arg ; do
-        local delim=""
-        case "$arg" in
-            #translate --gnu-long-options to -g (short options)
-            --axel)           args="${args}-x ";;
-            --aria)              args="${args}-r ";;
-            --wget)           args="${args}-w ";;
-            --nosave)         args="${args}-n ";;
-            --help)           args="${args}-h ";;
-            --parallel)       args="${args}-p ";;
-            --tries)          args="${args}-t ";;
-            #pass through anything else
-            *) [[ "${arg:0:1}" == "-" ]] || delim="\""
-                args="${args}${delim}${arg}${delim} ";;
-        esac
-    done
-
-    #Reset the positional parameters to the short options
-    eval set -- $args
 
     while getopts "xrwnhp:t:" OPTION
     do
@@ -103,7 +80,6 @@ cmdline() {
              ;;
         esac
     done
-
 
     readonly USE_AXEL=$use_axel
     readonly USE_ARIA=$use_aria
@@ -171,29 +147,28 @@ read_links() {
 }
 
 url_decode() {
-    perl -MURI::Escape -e 'print uri_unescape($ARGV[0])' "$@"
+    python -c "import sys, urllib as ul; print ul.unquote_plus(sys.argv[1])" "$@"
 }
 
 dl_link_axel() {
     local link="$@"
     end_of_url=${link##*/}
-    file_name=$(url_decode "${end_of_url%%\?*}")
+    file_name="$(url_decode "${end_of_url%%\?*}")"
     if [ -f "${file_name}" ] && ! [ -f "${file_name}.st" ] ; then
         continue
     fi
-
-    axel -a -n "$NB_PARALLEL_DL" "$link"
+    axel -a -n "$NB_PARALLEL_DL" -o "$file_name" "$link"
 }
 
 dl_link_aria() {
     local link="$@"
     end_of_url=${link##*/}
-    file_name=$(url_decode "${end_of_url%%\?*}")
+    file_name="$(url_decode "${end_of_url%%\?*}")"
     if [ -f "${file_name}" ] && ! [ -f "${file_name}.aria2" ] ; then
         continue
     fi
 
-    aria2c --continue=true -x "$NB_PARALLEL_DL" -j "$NB_PARALLEL_DL" --file-allocation=none --max-tries="$NB_TRIES" --max-file-not-found="$NB_TRIES" "$link"
+    aria2c --continue=true -x "$NB_PARALLEL_DL" -j "$NB_PARALLEL_DL" --file-allocation=none --max-tries="$NB_TRIES" --max-file-not-found="$NB_TRIES" --out="$file_name" "$link"
 }
 
 dl_link_wget() {
@@ -232,5 +207,3 @@ main() {
 }
 
 main "$@"
-
-
