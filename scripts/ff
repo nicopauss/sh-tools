@@ -1,0 +1,9 @@
+#!/bin/bash -e
+
+if [ "$#" -gt 1 ]; then
+    DIR=shift
+else
+    DIR="."
+fi
+
+find "$DIR" -iname "$@" 2>&1 | grep -v 'Permission denied'

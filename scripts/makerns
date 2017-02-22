@@ -1,0 +1,3 @@
+#!/bin/sh
+
+make P=release NOCHECK=1 $* 2>/dev/null

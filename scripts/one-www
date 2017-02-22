@@ -1,0 +1,18 @@
+#!/bin/sh -e
+
+if [ "$#" -lt 2 ]; then
+    echo "$0 Z_WWW_PREFIX cmd"
+    exit 1
+fi
+
+export Z_WWW_BROWSER="Chrome"
+export Z_WWW_HOST="vikoroff.corp"
+export Z_WWW_PREFIX=$1
+shift
+
+params=""
+for param in "$@"
+do
+  params="${params} \"${param}\""
+done
+eval "$params"

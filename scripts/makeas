@@ -1,0 +1,3 @@
+#!/bin/sh
+
+make P=asan $* 2>/dev/null

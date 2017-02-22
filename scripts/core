@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+if [ $# != 1 ]; then
+    echo "Exec name needed"
+    exit 1
+fi
+
+core_file=$(ls -t /srv/data/cores | grep "$1" | grep -v 'binary$' | head -1)
+cgdb "$1" "/srv/data/cores/$core_file"

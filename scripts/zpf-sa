@@ -1,0 +1,3 @@
+#!/bin/sh
+
+PLATFORM_MASTER_PID=$(pidof zpf-master) PLATFORM_CTLSOCK=@/var/run/zpf-master.ctl $*

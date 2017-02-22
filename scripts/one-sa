@@ -1,0 +1,3 @@
+#!/bin/sh
+
+PLATFORM_MASTER_PID=$(pidof one-master) PLATFORM_CTLSOCK=@/var/run/one-master.ctl $*

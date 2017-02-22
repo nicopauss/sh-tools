@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+target_branch="$1"
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+if [ $# -lt 1 ]; then
+    echo "Error, argument needed"
+    exit 1
+fi
+
+clean_up() {
+    git checkout $current_branch
+    exit
+}
+
+trap clean_up SIGHUP SIGINT SIGTERM
+
+echo "local: $current_branch, target: $target_branch"
+
+git fetch origin
+git checkout "$target_branch"
+git merge --ff-only "origin/$target_branch"
+clean_up

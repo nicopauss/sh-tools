@@ -1,0 +1,3 @@
+#!/bin/sh
+
+make P=asan NOCHECK=1 $* 2>/dev/null
