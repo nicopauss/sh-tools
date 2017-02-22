@@ -70,7 +70,7 @@ install_tmux()
 
     e_header "Installing tmux"
 
-    if [ ! -e "$home_tmux" ]; then
+    if [ ! -e "$home_tmuxconf" ]; then
         echo "$tmuxconf_script" > "$home_tmuxconf"
         e_success "No previous tmux found, installed new one"
         return 0
@@ -126,7 +126,28 @@ install_path_scripts()
     fi
 
     echo "$scripts_script" >> "$home_bashrc"
-    e_success "Installed new script"
+    e_success "Installed new scripts"
+}
+
+install_gitconfig()
+{
+    local home_gitconfig="$HOME/.gitconfig"
+    local gitconfig_path="$SH_TOOLS_DIR/dotfiles/gitconfig"
+    local gitconfig_script="    path = $gitconfig_path"
+    local found_str=''
+
+    e_header "Installing gitconfig"
+
+    found_str=$(grep -F "$gitconfig_script" "$home_gitconfig" 2>/dev/null || echo "")
+
+    if [ -n "$found_str" ]; then
+        e_success "Gitconfig already installed"
+        return 0
+    fi
+
+    echo "[include]" >> "$home_gitconfig"
+    echo "$gitconfig_script" >> "$home_gitconfig"
+    e_success "Installed new gitconfig"
 }
 
 main()
@@ -136,6 +157,7 @@ main()
     install_tmux
     install_bashrc
     install_path_scripts
+    install_gitconfig
 }
 
 main

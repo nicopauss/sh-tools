@@ -1,0 +1,94 @@
+[core]
+    excludesfile = ~/.gitignore
+    autocrlf = input
+
+[alias]
+    br = branch
+    co = checkout
+    ci = commit
+    cp = cherry-pick
+    ri = rebase -i
+    st = status
+    stat = status
+    pop = reset HEAD~
+    undo = reset HEAD~
+    glog = log --graph
+    tempo = commit -a -m tempo
+    su = submodule update --init --recursive
+    rh = reset --hard
+    cp = cherry-pick
+
+    amend = commit --amend
+    squash = commit --amend -C HEAD
+    fixup = commit --amend -C HEAD
+
+    unstash = stash apply
+
+    track = add -N
+    untrack = rm --cached
+
+    vimdiff = difftool -y -t vimdiff
+
+    workdir = !sh /usr/share/doc/git/contrib/workdir/git-new-workdir
+
+    branch-contains = branch origin/* --remotes --contains
+
+    diff-no-blank = diff --ignore-space-change --ignore-all-space --ignore-blank-lines
+
+# diff/show for word/CSV column instead of whole line
+    diff-word=diff --word-diff --word-diff-regex="\"[^ ;]+\""
+    show-word=show --word-diff --word-diff-regex="\"[^ ;]+\""
+
+# diff/show by character ; minimal changes
+    diff-char=diff --word-diff --word-diff-regex="."
+    show-char=show --word-diff --word-diff-regex="."
+
+[color]
+    ui     = auto
+    diff   = auto
+    branch = auto
+    status = auto
+    pager  = true
+    interactive = auto
+
+[color "diff"]
+    meta = green
+    frag = yellow
+    old = magenta
+    new = bold cyan
+
+[color "status"]
+    header = bold blue
+    added  = green
+    changed = bold red
+    untracked = bold yellow
+
+[notes]
+    displayRef = refs/notes/*
+
+[commit]
+    template = /srv/tools/share/dotfiles/git-commit-template
+
+[push]
+    default = upstream
+
+[merge]
+    verbosity = 1
+    conflictstyle = diff3
+    stat = true
+    renameLimit = 100000
+
+[rebase]
+    stat = true
+    autosquash = true
+
+[diff]
+    renames = copies
+
+[rerere]
+    enabled = true
+
+[tig "bind"]
+    generic = r !git rebase -i %(commit)
+    generic = p @sh -c \"echo -n %(commit) | xclip\"
+    generic = f !git commit --fixup=%(commit)
