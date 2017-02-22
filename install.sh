@@ -89,11 +89,53 @@ install_tmux()
     e_success "Backing up tmux to '$BACKUP_DIR', installed new one"
 }
 
+install_bashrc()
+{
+    local home_bashrc="$HOME/.bashrc"
+    local bashrc_path="$SH_TOOLS_DIR/dotfiles/bashrc"
+    local bashrc_script=". $bashrc_path"
+    local found_str=''
+
+    e_header "Installing bashrc"
+
+    found_str=$(grep -F "$bashrc_script" "$home_bashrc" 2>/dev/null || echo "")
+
+    if [ -n "$found_str" ]; then
+        e_success "Bashrc already installed"
+        return 0
+    fi
+
+    echo "$bashrc_script" >> "$home_bashrc"
+    e_success "Installed new bashrc"
+}
+
+install_path_scripts()
+{
+    local home_bashrc="$HOME/.bashrc"
+    local scripts_path="$SH_TOOLS_DIR/scripts"
+    local scripts_script="export PATH=\"$scripts_path:\$PATH\""
+    local found_str=''
+
+    e_header "Installing scripts"
+
+    found_str=$(grep -F "$scripts_script" "$home_bashrc" 2>/dev/null || echo "")
+
+    if [ -n "$found_str" ]; then
+        e_success "Scripts already installed"
+        return 0
+    fi
+
+    echo "$scripts_script" >> "$home_bashrc"
+    e_success "Installed new script"
+}
+
 main()
 {
     install_script
     install_vimrc
     install_tmux
+    install_bashrc
+    install_path_scripts
 }
 
 main

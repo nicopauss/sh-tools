@@ -1,0 +1,36 @@
+#!/bin/bash
+
+export LC_ALL="$LANG"
+export LC_TIME="en_GB.UTF-8"
+export LC_PAPER="en_GB.UTF-8"
+export LC_MEASUREMENT="en_GB.UTF-8"
+
+alias gitsu='git submodule update -i --recursive'
+alias gti='git'
+alias gck='git checkout'
+alias gst='git status'
+alias gsu='gitsu'
+alias g="git"
+
+alias gitup44="gitup 2014.4"
+alias gitupm="gitup master"
+
+alias tmux-env="tmux show-environment"
+
+function psax {
+    ps ax | grep --color=always $* | grep -v grep
+}
+
+function tmux-re {
+    local v
+    while read v; do
+        if [[ $v == -* ]]; then
+            unset ${v/#-/}
+        else
+            # Add quotes around the argument
+            v=${v/=/=\"}
+            v=${v/%/\"}
+            eval export $v
+        fi
+    done < <(tmux show-environment)
+}
