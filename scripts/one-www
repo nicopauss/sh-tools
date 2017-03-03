@@ -6,7 +6,7 @@ if [ "$#" -lt 2 ]; then
 fi
 
 export Z_WWW_BROWSER="Chrome"
-export Z_WWW_HOST="vikoroff.corp"
+export Z_WWW_HOST="localhost"
 export Z_WWW_PREFIX=$1
 shift
 
