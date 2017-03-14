@@ -34,6 +34,8 @@ install_vimrc()
 
     e_header "Installing vimrc"
 
+    mkdir -p "$HOME/.cache/vim/undo"
+
     if [ ! -e "$home_vimrc" ]; then
         echo "$vimrc_script" > "$home_vimrc"
         e_success "No previous vimrc found, installed new one"
