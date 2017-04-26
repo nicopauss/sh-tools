@@ -66,8 +66,8 @@ install_vimrc()
 install_tmux()
 {
     local home_tmuxconf="$HOME/.tmux.conf"
-    local tmuxconf_path="$SH_TOOLS_DIR/dotfiles/tmux.conf"
-    local tmuxconf_script="source-file $tmuxconf_path"
+    local tmuxconf_path="$SH_TOOLS_DIR/dotfiles/tmux.sh"
+    local tmuxconf_script="run-shell \"bash $tmuxconf_path\""
     local found_str=''
 
     e_header "Installing tmux"
