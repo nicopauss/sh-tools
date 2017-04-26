@@ -6,4 +6,4 @@ else
     DIR="."
 fi
 
-find "$DIR" -iname "$@" 2>&1 | grep -v 'Permission denied'
+find "$DIR" -iname "$@" 2>/dev/null
