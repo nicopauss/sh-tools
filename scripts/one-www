@@ -1,16 +1,21 @@
 #!/bin/sh -e
 
 if [ "$#" -lt 2 ]; then
-    echo "$0 Z_WWW_PREFIX cmd"
+    echo "usage: $0 Z_WWW_PREFIX [Firefox] cmd [args...]"
     exit 1
 fi
 
-export Z_WWW_BROWSER="Firefox"
-export Z_WWW_BIN_PATH="/usr/bin/firefox"
-export Z_WWW_BROWSER="Chrome"
 export Z_WWW_HOST="localhost"
 export Z_WWW_PREFIX=$1
 shift
+
+if [ "$1" = "Firefox" ]; then
+    export Z_WWW_BROWSER="Firefox"
+    export Z_WWW_BIN_PATH="/usr/bin/firefox"
+    shift
+else
+    export Z_WWW_BROWSER="Chrome"
+fi
 
 params=""
 for param in "$@"
