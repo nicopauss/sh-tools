@@ -15,6 +15,7 @@ Plug 'junegunn/vim-easy-align'
 Plug 'shawncplus/phpcomplete.vim'
 Plug 'terryma/vim-expand-region'
 Plug 'airblade/vim-gitgutter'
+Plug 'leafgarland/typescript-vim'
 Plug 'Valloric/YouCompleteMe', { 'do': './install.sh --clang-completer' }
 
 call plug#end()
