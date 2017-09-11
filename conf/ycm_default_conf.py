@@ -1,6 +1,13 @@
 import os
 import ycm_core # pylint: disable=F0401
 
+# pylint: disable=import-error
+from ycmd.completers.cpp.clang_completer import CLANG_FILETYPES
+
+SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm', '.blk' ]
+HEADER_EXTENSIONS = [ '.h', '.hxx', '.hpp', '.hh' ]
+SPECIAL_FLAGS = { '.blk' : [ '-xc' ] }
+
 def create_database(compilation_database_folder):
     if not os.path.exists(compilation_database_folder):
         return None
@@ -42,14 +49,24 @@ def make_relative_paths_in_flags_absolute(flags, working_directory):
 
 def is_header_file(filename):
     extension = os.path.splitext(filename)[1]
-    return extension in ['.h', '.hxx', '.hpp', '.hh']
+    return extension in HEADER_EXTENSIONS
 
 
-SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm', '.blk' ]
+def clang_supported_file_types(completer):
+    return SOURCE_EXTENSIONS
+
+
+def fix_file_type_flags(filename, flags):
+    extension = os.path.splitext(filename)[1]
+    try:
+        flags.extend(SPECIAL_FLAGS[extension])
+    except KeyError:
+        pass
 
 
 class YcmDefaultConf(object):
     def __init__(self, flags, compilation_database_folder):
+        CLANG_FILETYPES.update(SOURCE_EXTENSIONS)
         self.flags = make_relative_paths_in_flags_absolute(
             flags, directory_of_this_script())
         self.database = create_database(compilation_database_folder)
@@ -86,10 +103,9 @@ class YcmDefaultConf(object):
             flags = _with_database(filename) if self.database else \
                     _without_database(filename)
 
-            return {
-              'flags': flags,
-              'do_cache': True
-            }
+            fix_file_type_flags(filename, flags)
+
+            return {'flags': flags, 'do_cache': True}
         return _func
 
 if __name__ != 'ycm_default_conf':
