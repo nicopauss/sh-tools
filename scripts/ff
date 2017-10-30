@@ -6,4 +6,4 @@ else
     DIR="."
 fi
 
-find "$DIR" -iname "$@" 2>/dev/null
+find "$DIR" -iname "*$@*" 2>/dev/null
