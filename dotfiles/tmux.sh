@@ -21,6 +21,7 @@ main() {
     load_conf ">" "2.0"
     load_conf "<" "2.1"
     load_conf "<" "2.2"
+    source "$TMUX_CONF_DIR/tmux-resurrect/resurrect.tmux"
 }
 
 main

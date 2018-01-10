@@ -1,3 +1,6 @@
 [submodule "dotfiles/vim/autoload"]
 	path = dotfiles/vim/autoload
 	url = https://github.com/junegunn/vim-plug.git
+[submodule "dotfiles/tmux/tmux-resurrect"]
+	path = dotfiles/tmux/tmux-resurrect
+	url = https://github.com/tmux-plugins/tmux-resurrect
