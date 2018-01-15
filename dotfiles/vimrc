@@ -169,7 +169,7 @@ map <S-Down> <C-E>
 set mouse+=a
 
 " better grep
-command! -nargs=+ Ggr execute "silent Ggrep!" string(<q-args>) | cw | redraw!
+command! -nargs=+ Ggr execute "silent Ggrep!" <q-args> | cw | redraw!
 map <F4> :Ggr <cword><cr>
 
 " close current buffer and move to next
