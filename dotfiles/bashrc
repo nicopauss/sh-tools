@@ -17,8 +17,13 @@ alias gitupm="gitup master"
 
 alias tmux-env="tmux show-environment"
 
-alias pbcopy='xclip -selection clipboard'
-alias pbpaste='xclip -selection clipboard -o'
+if ! which pbcopy >/dev/null; then
+    alias pbcopy='xclip -selection clipboard'
+fi
+
+if ! which pbpaste >/dev/null; then
+    alias pbpaste='xclip -selection clipboard -o'
+fi
 
 function psax {
     ps ax | grep --color=always $* | grep -v grep
