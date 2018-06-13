@@ -6,7 +6,6 @@ call plug#begin("~/.vim/plugged")
 
 Plug 'scrooloose/nerdtree'
 Plug 'ctrlpvim/ctrlp.vim'
-Plug 'scrooloose/syntastic'
 Plug 'bling/vim-airline'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'tpope/vim-fugitive'
@@ -15,7 +14,8 @@ Plug 'shawncplus/phpcomplete.vim'
 Plug 'terryma/vim-expand-region'
 Plug 'airblade/vim-gitgutter'
 Plug 'leafgarland/typescript-vim'
-Plug 'Valloric/YouCompleteMe', { 'do': './install.sh --clang-completer' }
+Plug 'embear/vim-localvimrc'
+Plug 'w0rp/ale'
 
 call plug#end()
 
@@ -231,38 +231,24 @@ endif
 map <C-n> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-" Syntastic (syntax checker)
+" Local vimrc
 
-" XXX Syntastic fails to find your header files? Try 'make syntastic' in the
-"     root directory of your repository.
+let g:localvimrc_name = '.local_vimrc.vim'
+let g:localvimrc_persistent = 2
+let g:localvimrc_event = [ "BufWinEnter", "BufRead" ]
 
-let g:syntastic_mode_map = { 'mode': 'active',
-                           \ 'passive_filetypes': [ ] }
-let g:syntastic_ignore_files = ['^/usr/include/']
-let g:syntastic_auto_loc_list=1
-let g:syntastic_auto_jump=0
-let g:syntastic_check_on_open=1
-let g:syntastic_silent_make=0
+" Ale
 
-let g:syntastic_c_compiler = 'clang'
-let g:syntastic_c_compiler_options = ''
-let g:syntastic_c_include_dirs = [ ]
-let g:syntastic_c_no_include_search = 1
-let g:syntastic_c_no_default_include_dirs = 1
-let g:syntastic_c_config_file = '.syntastic_c_config'
+let g:ale_sign_error = '✗'
+let g:ale_sign_warning = '⚠'
+let g:ale_open_list = 1
+let g:ale_linters = {
+    \   'c': ['clang'] }
+let g:airline#extensions#ale#enabled = 1
+let g:ale_set_balloons = 0
 
-let g:syntastic_cpp_compiler = 'clang++'
-let g:syntastic_cpp_compiler_options = ''
-let g:syntastic_cpp_include_dirs = [ ]
-let g:syntastic_cpp_no_include_search = 1
-let g:syntastic_cpp_no_default_include_dirs = 1
-let g:syntastic_cpp_config_file = '.syntastic_cpp_config'
-
-let g:syntastic_python_checkers = ['pylint']
-
-" let :E :Explore (syntastic defines an Errors command which makes :E
-" ambiguous)
-command! -nargs=* -bar -bang -count=0 -complete=dir E Explore <args>
+highlight link ALEWarningSign String
+highlight link ALEErrorSign Title
 
 " a.vim
 let g:alternateRelativeFiles   = 1
