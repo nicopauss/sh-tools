@@ -246,12 +246,14 @@ let g:syntastic_c_compiler_options = ''
 let g:syntastic_c_include_dirs = [ ]
 let g:syntastic_c_no_include_search = 1
 let g:syntastic_c_no_default_include_dirs = 1
+let g:syntastic_c_config_file = '.syntastic_c_config'
 
 let g:syntastic_cpp_compiler = 'clang++'
 let g:syntastic_cpp_compiler_options = ''
 let g:syntastic_cpp_include_dirs = [ ]
 let g:syntastic_cpp_no_include_search = 1
 let g:syntastic_cpp_no_default_include_dirs = 1
+let g:syntastic_cpp_config_file = '.syntastic_cpp_config'
 
 let g:syntastic_python_checkers = ['pylint']
 
