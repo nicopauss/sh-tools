@@ -5,7 +5,6 @@ let &rtp = "$HOME/.vim,".s:vimrcdir ."/vim,$VIM/vimfiles,$VIMRUNTIME"
 call plug#begin("~/.vim/plugged")
 
 Plug 'scrooloose/nerdtree'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'bling/vim-airline'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'tpope/vim-fugitive'
@@ -16,6 +15,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'leafgarland/typescript-vim'
 Plug 'embear/vim-localvimrc'
 Plug 'w0rp/ale'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 call plug#end()
 
@@ -256,8 +257,10 @@ let g:alternateExtensions_blk  = "h"
 let g:alternateExtensions_blkk = "h"
 let g:alternateExtensions_h    = "c,cpp,cxx,cc,CC,blk,blkk"
 
-" ctrlp
-let g:ctrlp_user_command = ['.git', 'cd %s && git ls-files && git submodule -q foreach ''for file in $(git ls-files); do echo $name/$file; done''']
+" fzf
+
+" remap Ctrl-p on files referenced by Git
+nmap <C-p> :GFiles<CR>
 
 " YCM
 let g:ycm_show_diagnostics_ui = 0
