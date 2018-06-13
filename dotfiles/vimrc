@@ -19,7 +19,8 @@ Plug 'Valloric/YouCompleteMe', { 'do': './install.sh --clang-completer' }
 
 call plug#end()
 
-" Various options
+" {{{ Various options
+
 filetype plugin on
 filetype plugin indent on
 
@@ -96,6 +97,7 @@ au! Syntax {cpp,c,d,javascript}
 au Syntax {cpp,c,d,javascript} runtime syntax/doxygen.vim
 let g:doxygen_end_punctuation='[.?!]'
 
+" }}}
 " {{{ Mapping
 
 " change leader
@@ -213,6 +215,7 @@ vmap <silent> <expr> p <sid>Repl()
 noremap gV `[v`]
 
 " }}}
+" {{{ Plugins options
 
 " Overlength
 if version >= 703
@@ -291,7 +294,9 @@ if &term =~ '^screen'
     execute "set <xLeft>=\e[1;*D"
 endif
 
-" Colors
+" }}}
+" {{{ Colors
+
 set background=light
 hi Comment      cterm=none       ctermfg=blue       ctermbg=none
 hi doxygenBrief cterm=none       ctermfg=cyan       ctermbg=none
@@ -320,3 +325,5 @@ hi SpellRare    cterm=none       ctermfg=none       ctermbg=none
 
 hi javaScriptTpl     cterm=none  ctermfg=darkgreen  ctermbg=none
 hi javaScriptTplMark cterm=none  ctermfg=magenta    ctermbg=none
+
+" }}}
