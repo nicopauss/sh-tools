@@ -253,6 +253,31 @@ let g:ale_completion_enabled = 1
 highlight link ALEWarningSign String
 highlight link ALEErrorSign Title
 
+function! AleLintersClangHeaderGetCommand(buffer, output) abort
+    let l:c_opts = ale#Var(a:buffer, 'c_clang_options')
+    let l:h_opts = ' -Wno-unused-function -x c-header'
+
+    call setbufvar(a:buffer, 'ale_c_clang_options', l:c_opts . l:h_opts)
+    return ale_linters#c#clang#GetCommand(a:buffer, a:output)
+endfunction
+
+call ale#linter#Define('c', {
+\   'name': 'clangheader',
+\   'output_stream': 'stderr',
+\   'executable_callback': 'ale_linters#c#clang#GetExecutable',
+\   'command_chain': [
+\       {'callback': 'ale#c#GetMakeCommand', 'output_stream': 'stdout'},
+\       {'callback': 'AleLintersClangHeaderGetCommand'}
+\   ],
+\   'callback': 'ale#handlers#gcc#HandleGCCFormat',
+\})
+
+let g:ale_pattern_options = {
+\   '\.h$': {
+\       'ale_linters': ['clangheader']
+\   }
+\}
+
 " a.vim
 let g:alternateRelativeFiles   = 1
 let g:alternateExtensions_blk  = "h"

@@ -4,8 +4,8 @@ endif
 
 " C/C++
 au FileType c,cpp setlocal noignorecase textwidth=78
-au BufRead,BufNewFile *.blk,*.fc setf c
-au BufRead,BufNewFile *.blkk setf cpp
+au BufRead,BufNewFile *.blk,*.fc,*.h setf c
+au BufRead,BufNewFile *.blkk,*.hpp setf cpp
 
 let c_gnu=1
 let c_space_errors=1
