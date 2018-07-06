@@ -4,12 +4,10 @@ let &rtp = "$HOME/.vim,".s:vimrcdir ."/vim,$VIM/vimfiles,$VIMRUNTIME"
 " Plugins
 call plug#begin("~/.vim/plugged")
 
-Plug 'scrooloose/nerdtree'
 Plug 'bling/vim-airline'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/a.vim'
-Plug 'shawncplus/phpcomplete.vim'
 Plug 'terryma/vim-expand-region'
 Plug 'airblade/vim-gitgutter'
 Plug 'leafgarland/typescript-vim'
@@ -227,11 +225,6 @@ else
     au FileType c,cpp match OverLength /\%79v.\+/
     hi OverLength cterm=none ctermfg=none ctermbg=darkblue
 endif
-
-" NERDTree
-"autocmd vimenter * NERDTree
-map <C-n> :NERDTreeToggle<CR>
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
 " Local vimrc
 
