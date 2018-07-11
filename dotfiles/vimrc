@@ -63,6 +63,7 @@ au BufRead,BufNewFile *.less setfiletype css
 set cpoptions-=C
 set tags=tags;/,.tags;/,TAG;/
 if version >= 703
+    set directory=~/.cache/vim/swap//
     set undofile                          " to activate undofile feature
     set undodir=~/.cache/vim/undo,.       " to store undo files in same a specific dir
     au BufWritePre tmp* setl noundofile   " to ignore file into /tmp

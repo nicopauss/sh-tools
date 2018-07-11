@@ -34,6 +34,7 @@ install_vimrc()
 
     e_header "Installing vimrc"
 
+    mkdir -p "$HOME/.cache/vim/swap"
     mkdir -p "$HOME/.cache/vim/undo"
 
     if [ ! -e "$home_vimrc" ]; then
