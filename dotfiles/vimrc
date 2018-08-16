@@ -257,12 +257,12 @@ endfunction
 call ale#linter#Define('c', {
 \   'name': 'clangheader',
 \   'output_stream': 'stderr',
-\   'executable_callback': 'ale_linters#c#clang#GetExecutable',
+\   'executable_callback': ale#VarFunc('c_clang_executable'),
 \   'command_chain': [
 \       {'callback': 'ale#c#GetMakeCommand', 'output_stream': 'stdout'},
 \       {'callback': 'AleLintersClangHeaderGetCommand'}
 \   ],
-\   'callback': 'ale#handlers#gcc#HandleGCCFormat',
+\   'callback': 'ale#handlers#gcc#HandleGCCFormatWithIncludes',
 \})
 
 let g:ale_pattern_options = {
