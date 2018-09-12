@@ -12,7 +12,6 @@ alias gst='git status'
 alias gsu='gitsu'
 alias g="git"
 
-alias gitup44="gitup 2014.4"
 alias gitupm="gitup master"
 
 alias tmux-env="tmux show-environment"
@@ -42,3 +41,61 @@ function tmux-re {
         fi
     done < <(tmux show-environment)
 }
+
+function build-nenv {
+    NOCHECK=1 NO_JAVA=1 NO_DOUBLE_FPIC=1 NOCOMPRESS=1 $@
+}
+
+function build-denv {
+    P=debug $@
+}
+
+function build-renv {
+    P=release $@
+}
+
+function build-aenv {
+    P=asan $@
+}
+
+function no-stderr {
+    $@ 2>/dev/null
+}
+
+function waf-build {
+    waf configure && waf build
+}
+
+alias wafn='build-nenv waf-build'
+alias wafdn='build-denv build-nenv waf-build'
+alias wafrn='build-renv build-nenv waf-build'
+alias wafan='build-aenv build-nenv waf-build'
+alias wafd='build-denv waf-build'
+alias wafr='build-renv waf-build'
+alias wafa='build-aenv waf-build'
+
+alias wafs='no-stderr waf-build'
+alias wafns='no-stderr build-nenv waf-build'
+alias wafdns='no-stderr build-denv build-nenv waf-build'
+alias wafrns='no-stderr build-renv build-nenv waf-build'
+alias wafans='no-stderr build-aenv build-nenv waf-build'
+alias wafds='no-stderr build-denv waf-build'
+alias wafrs='no-stderr build-renv waf-build'
+alias wafas='no-stderr build-aenv waf-build'
+
+alias maken='build-nenv make'
+alias makedn='build-denv build-nenv make'
+alias makern='build-renv build-nenv make'
+alias makean='build-aenv build-nenv make'
+alias maked='build-denv make'
+alias maker='build-renv make'
+alias makea='build-aenv make'
+
+alias makes='no-stderr make'
+alias makens='no-stderr build-nenv make'
+alias makedns='no-stderr build-denv build-nenv make'
+alias makerns='no-stderr build-renv build-nenv make'
+alias makeans='no-stderr build-aenv build-nenv make'
+alias makeds='no-stderr build-denv make'
+alias makers='no-stderr build-renv make'
+alias makeas='no-stderr build-aenv make'

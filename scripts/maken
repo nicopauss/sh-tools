@@ -1,3 +1,0 @@
-#!/bin/sh
-
-make NOCHECK=1 $*

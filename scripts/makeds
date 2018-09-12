@@ -1,3 +1,0 @@
-#!/bin/sh
-
-make P=debug $* 2>/dev/null
