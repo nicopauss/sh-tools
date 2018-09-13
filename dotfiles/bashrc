@@ -63,7 +63,7 @@ function no-stderr {
 }
 
 function waf-build {
-    waf configure && waf build
+    (cd $(git rev-parse --show-toplevel) && waf configure) && waf $@
 }
 
 alias wafn='build-nenv waf-build'
