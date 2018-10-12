@@ -34,6 +34,7 @@ au FileType smarty setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
 " Python
 au FileType python setlocal textwidth=78
+au BufRead,BufNewFile wscript* setf python
 let python_highlight_all=1
 
 " Snippets
