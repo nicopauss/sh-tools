@@ -57,3 +57,6 @@ au BufRead,BufNewFile *.adoc setf asciidoc
 let git_diff_spawn_mode=2
 au FileType gitcommit setlocal spell spelllang=en_us
 au BufNewFile,BufRead *.git/config,*/.git/config,.gitconfig setf dosini
+
+" Cython
+au FileType pyrex setlocal textwidth=78
