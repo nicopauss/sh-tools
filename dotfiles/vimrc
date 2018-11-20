@@ -80,7 +80,7 @@ set errorformat^=:%*[\ ]%f:%l:\ %m
 set tabstop=4
 set softtabstop=4
 set expandtab
-set textwidth=0
+set textwidth=78
 set shiftwidth=4
 
 set cinoptions=
