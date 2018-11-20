@@ -229,9 +229,16 @@ endif
 
 " Local vimrc
 
-let g:localvimrc_name = '.local_vimrc.vim'
+let g:localvimrc_name = ['.lvimrc', '.local_vimrc.vim']
 let g:localvimrc_persistent = 2
 let g:localvimrc_event = [ "BufWinEnter", "BufRead" ]
+
+" disable sandboxing (the option makeprg that we set in waf localvimrcs cannot
+" be set in a sandbox)
+let g:localvimrc_sandbox = 0
+
+" Whitelist ~/dev, which must contains all our repositories
+let g:localvimrc_whitelist = $HOME.'/dev/'
 
 " Ale
 
