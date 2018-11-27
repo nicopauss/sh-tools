@@ -276,6 +276,9 @@ call ale#linter#Define('c', {
 let g:ale_pattern_options = {
 \   '\.h$': {
 \       'ale_linters': ['clangheader']
+\   },
+\   '\.ts$': {
+\       'ale_linters': ['tsserver']
 \   }
 \}
 
