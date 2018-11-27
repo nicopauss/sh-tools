@@ -46,6 +46,10 @@ function build-nenv {
     NOCHECK=1 NO_JAVA=1 NO_DOUBLE_FPIC=1 NOCOMPRESS=1 $@
 }
 
+function build-noweb-env {
+    NO_WWW=1 $@
+}
+
 function build-denv {
     P=debug $@
 }
@@ -82,6 +86,24 @@ alias wafans='no-stderr build-aenv build-nenv waf-build'
 alias wafds='no-stderr build-denv waf-build'
 alias wafrs='no-stderr build-renv waf-build'
 alias wafas='no-stderr build-aenv waf-build'
+
+alias wafc='build-noweb-env waf-build'
+alias wafcn='build-noweb-env build-nenv waf-build'
+alias wafcdn='build-noweb-env build-denv build-nenv waf-build'
+alias wafcrn='build-noweb-env build-renv build-nenv waf-build'
+alias wafcan='build-noweb-env build-aenv build-nenv waf-build'
+alias wafcd='build-noweb-env build-denv waf-build'
+alias wafcr='build-noweb-env build-renv waf-build'
+alias wafca='build-noweb-env build-aenv waf-build'
+
+alias wafcs='no-stderr build-noweb-env waf-build'
+alias wafcns='no-stderr build-noweb-env build-nenv waf-build'
+alias wafcdns='no-stderr build-noweb-env build-denv build-nenv waf-build'
+alias wafcrns='no-stderr build-noweb-env build-renv build-nenv waf-build'
+alias wafcans='no-stderr build-noweb-env build-aenv build-nenv waf-build'
+alias wafcds='no-stderr build-noweb-env build-denv waf-build'
+alias wafcrs='no-stderr build-noweb-env build-renv waf-build'
+alias wafcas='no-stderr build-noweb-env build-aenv waf-build'
 
 alias maken='build-nenv make'
 alias makedn='build-denv build-nenv make'
