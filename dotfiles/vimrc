@@ -264,11 +264,10 @@ endfunction
 call ale#linter#Define('c', {
 \   'name': 'clangheader',
 \   'output_stream': 'stderr',
-\   'executable_callback': ale#VarFunc('c_clang_executable'),
-\   'command_chain': [
-\       {'callback': 'ale#c#GetMakeCommand', 'output_stream': 'stdout'},
-\       {'callback': 'AleLintersClangHeaderGetCommand'}
-\   ],
+\   'executable': {b -> ale#Var(b, 'c_clang_executable')},
+\   'command':  {b -> ale#c#RunMakeCommand(
+\       b, function('AleLintersClangHeaderGetCommand')
+\    )},
 \   'callback': 'ale#handlers#gcc#HandleGCCFormatWithIncludes',
 \})
 
