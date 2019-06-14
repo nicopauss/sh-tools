@@ -43,7 +43,7 @@ function tmux-re {
 }
 
 function build-nenv {
-    NOCHECK=1 NO_JAVA=1 NO_DOUBLE_FPIC=1 NOCOMPRESS=1 FAKE_VERSIONS=1 $@
+    NOCHECK=1 NO_JAVA=1 NOCOMPRESS=1 FAKE_VERSIONS=1 $@
 }
 
 function build-noweb-env {
