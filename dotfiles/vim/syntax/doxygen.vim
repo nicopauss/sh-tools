@@ -468,13 +468,6 @@ endif
 
     call s:Doxygen_Hilights()
 
-    " This is still a proposal, but won't do any harm.
-    aug doxygengroup
-    au!
-    au Syntax UserColor_reset nested call s:Doxygen_Hilights_Base()
-    au Syntax UserColor_{on,reset,enable} nested call s:Doxygen_Hilights()
-    aug END
-
 
     SynLink doxygenBody                   Comment
     SynLink doxygenLine                   doxygenBody
