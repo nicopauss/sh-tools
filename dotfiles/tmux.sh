@@ -19,10 +19,12 @@ load_conf() {
 
 main() {
     tmux source-file "$TMUX_CONF_DIR/tmux-global.conf"
-    load_conf ">" "2.0" "tmux-2.0.conf"
-    load_conf "<" "2.1" "tmux-2.1.conf"
-    load_conf "<" "2.2" "tmux-2.2.conf"
-    load_conf ">" "2.2" "tmux-sup-2.2.conf"
+    load_conf ">=" "2.0" "tmux-2.0.conf"
+    load_conf "<" "2.1" "tmux-inf-2.1.conf"
+    load_conf "<" "2.2" "tmux-inf-2.2.conf"
+    load_conf ">=" "2.2" "tmux-2.2.conf"
+    load_conf "<" "2.4" "tmux-inf-2.4.conf"
+    load_conf ">=" "2.4" "tmux-2.4.conf"
     source "$TMUX_CONF_DIR/tmux-resurrect/resurrect.tmux"
 }
 
