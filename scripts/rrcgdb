@@ -1,0 +1,15 @@
+#!/bin/bash -eu
+
+RR_DIR=""
+
+if [ "$#" -ge 1 ]; then
+    RR_DIR="$1"
+    shift
+    if [ "$RR_DIR" = "latest" ]; then
+        RR_DIR=""
+    else
+        RR_DIR=$(find ~/.rr/ -maxdepth 1 -iname "$RR_DIR-*" -exec ls -d1t "{}" + | head -n1)
+    fi
+fi
+
+rr replay -d cgdb "$RR_DIR" $*
