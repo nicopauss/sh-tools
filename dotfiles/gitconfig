@@ -32,6 +32,7 @@
     workdir = !sh /usr/share/doc/git/contrib/workdir/git-new-workdir
 
     branch-contains = branch origin/* --remotes --contains
+    br-cont = branch-contains
 
     diff-no-blank = diff --ignore-space-change --ignore-all-space --ignore-blank-lines
 
