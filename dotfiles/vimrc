@@ -318,6 +318,9 @@ if &term =~ '^screen'
     execute "set <xLeft>=\e[1;*D"
 endif
 
+" Typescript
+let g:typescript_indent_disable = 1
+
 " }}}
 " {{{ Colors
 
