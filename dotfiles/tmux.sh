@@ -4,7 +4,7 @@ set -eu
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TMUX_CONF_DIR="$DIR/tmux"
-TMUX_VERSION="$(tmux -V | cut -c 6-)"
+TMUX_VERSION="$(tmux -V | cut -c 6- | sed 's/[^0-9\.]//g')"
 
 load_conf() {
     local op="$1"
