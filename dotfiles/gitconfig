@@ -67,9 +67,6 @@
 [notes]
     displayRef = refs/notes/*
 
-[commit]
-    template = /srv/tools/share/dotfiles/git-commit-template
-
 [push]
     default = upstream
 
