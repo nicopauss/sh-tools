@@ -18,6 +18,10 @@ alias gitupm="gitup master"
 
 alias tmux-env="tmux show-environment"
 
+alias ll='ls -l'
+alias la='ls -A'
+alias l='ls -CF'
+
 if ! which pbcopy >/dev/null; then
     alias pbcopy='xclip -selection clipboard'
 fi
