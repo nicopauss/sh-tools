@@ -76,6 +76,15 @@ function waf-build {
     (cd $(git rev-parse --show-toplevel) && waf configure) && waf $@
 }
 
+function randbug {
+    local i=1;
+    while "$@"; do
+        echo "---------- randbug: run #$i done ----------";
+        i=$((i+1));
+    done
+    echo "randbug: failure occurred at run #$i";
+}
+
 alias wafn='build-nenv waf-build'
 alias wafdn='build-denv build-nenv waf-build'
 alias wafrn='build-renv build-nenv waf-build'
