@@ -57,34 +57,6 @@ function tmux-re {
     done < <(tmux show-environment)
 }
 
-function build-nenv {
-    NOCHECK=1 NO_JAVA=1 NOCOMPRESS=1 FAKE_VERSIONS=1 $@
-}
-
-function build-noweb-env {
-    NO_WWW=1 $@
-}
-
-function build-denv {
-    P=debug $@
-}
-
-function build-renv {
-    P=release $@
-}
-
-function build-aenv {
-    P=asan $@
-}
-
-function no-stderr {
-    $@ 2>/dev/null
-}
-
-function waf-build {
-    (cd $(git rev-parse --show-toplevel) && waf configure) && waf $@
-}
-
 function randbug {
     local i=1;
     while "$@"; do
@@ -94,40 +66,45 @@ function randbug {
     echo "randbug: failure occurred at run #$i";
 }
 
-alias wafn='build-nenv waf-build'
-alias wafdn='build-denv build-nenv waf-build'
-alias wafrn='build-renv build-nenv waf-build'
-alias wafan='build-aenv build-nenv waf-build'
-alias wafd='build-denv waf-build'
-alias wafr='build-renv waf-build'
-alias wafa='build-aenv waf-build'
+function build-nenv {
+    NOCHECK=1 NO_JAVA=1 NOCOMPRESS=1 FAKE_VERSIONS=1 "$@"
+}
 
-alias wafs='no-stderr waf-build'
-alias wafns='no-stderr build-nenv waf-build'
-alias wafdns='no-stderr build-denv build-nenv waf-build'
-alias wafrns='no-stderr build-renv build-nenv waf-build'
-alias wafans='no-stderr build-aenv build-nenv waf-build'
-alias wafds='no-stderr build-denv waf-build'
-alias wafrs='no-stderr build-renv waf-build'
-alias wafas='no-stderr build-aenv waf-build'
+function build-noweb-env {
+    NO_WWW=1 "$@"
+}
 
-alias wafc='build-noweb-env waf-build'
-alias wafcn='build-noweb-env build-nenv waf-build'
-alias wafcdn='build-noweb-env build-denv build-nenv waf-build'
-alias wafcrn='build-noweb-env build-renv build-nenv waf-build'
-alias wafcan='build-noweb-env build-aenv build-nenv waf-build'
-alias wafcd='build-noweb-env build-denv waf-build'
-alias wafcr='build-noweb-env build-renv waf-build'
-alias wafca='build-noweb-env build-aenv waf-build'
+function build-denv {
+    P=debug "$@"
+}
 
-alias wafcs='no-stderr build-noweb-env waf-build'
-alias wafcns='no-stderr build-noweb-env build-nenv waf-build'
-alias wafcdns='no-stderr build-noweb-env build-denv build-nenv waf-build'
-alias wafcrns='no-stderr build-noweb-env build-renv build-nenv waf-build'
-alias wafcans='no-stderr build-noweb-env build-aenv build-nenv waf-build'
-alias wafcds='no-stderr build-noweb-env build-denv waf-build'
-alias wafcrs='no-stderr build-noweb-env build-renv waf-build'
-alias wafcas='no-stderr build-noweb-env build-aenv waf-build'
+function build-renv {
+    P=release "$@"
+}
+
+function build-aenv {
+    P=asan "$@"
+}
+
+function no-stderr {
+    "$@" 2>/dev/null
+}
+
+function waf-configure {
+    (cd "$(git rev-parse --show-toplevel)" && waf configure "$@")
+}
+
+alias wafcn='build-nenv waf-configure'
+alias wafcdn='build-denv build-nenv waf-configure'
+alias wafcrn='build-renv build-nenv waf-configure'
+alias wafcan='build-aenv build-nenv waf-configure'
+alias wafcd='build-denv waf-configure'
+alias wafcr='build-renv waf-configure'
+alias wafca='build-aenv waf-configure'
+
+alias baf='build-noweb-env waf'
+alias bafs='no-stderr build-noweb-env waf'
+alias wafs='no-stderr waf'
 
 alias maken='build-nenv make'
 alias makedn='build-denv build-nenv make'
