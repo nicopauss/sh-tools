@@ -19,10 +19,6 @@ au BufRead,BufNewFile *.iop setf d
 au FileType javascript setlocal cindent cinoptions-=L0.5s noignorecase textwidth=78 iskeyword+=$
 au BufRead,BufNewFile *.cf setf json
 
-" Javascript
-au FileType typescript setlocal cindent cinoptions-=L0.5s noignorecase textwidth=78 iskeyword+=$
-au BufRead,BufNewFile *.ts setf typescript
-
 " PHP
 au FileType php setlocal et fo+=ro indentexpr= cin
 let php_noShortTags=1

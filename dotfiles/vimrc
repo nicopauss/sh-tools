@@ -282,7 +282,7 @@ let g:ale_pattern_options = {
 let g:ale_linters = {
 \   'c': ['clang'],
 \   'javascript': ['eslint'],
-\   'typescript': ['tsserver'],
+\   'typescript': ['tslint', 'tsserver', 'typecheck'],
 \   'rust': ['rustc']
 \}
 
@@ -318,9 +318,6 @@ if &term =~ '^screen'
     execute "set <xRight>=\e[1;*C"
     execute "set <xLeft>=\e[1;*D"
 endif
-
-" Typescript
-let g:typescript_indent_disable = 1
 
 " }}}
 " {{{ Colors
