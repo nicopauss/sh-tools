@@ -1,3 +1,7 @@
 #!/bin/sh
 
-PLATFORM_MASTER_PID=$(pidof one-master) PLATFORM_BINDIR="$PWD" PLATFORM_CTLSOCK=@/var/run/one-master.ctl $*
+export PLATFORM_MASTER_PID=$(pidof one-master)
+export PLATFORM_BINDIR="$PWD"
+export PLATFORM_PREFIX="$PWD/prefix"
+export PLATFORM_CTLSOCK=@/var/run/one-master.ctl
+$*
