@@ -1,9 +1,5 @@
 [MASTER]
 
-# relative import
-init-hook='import ipath; ipath.register_paths()'
-
-
 # Profiled execution.
 profile=no
 
