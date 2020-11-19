@@ -36,7 +36,7 @@ set hlsearch
 set autoindent
 set hidden
 set esckeys
-set listchars=eol:\ ,tab:\ \ ,trail:-,extends:>,precedes:<,nbsp:¤
+set listchars=eol:\ ,tab:>-,trail:-,extends:>,precedes:<,nbsp:¤
 set list
 
 set ruler
