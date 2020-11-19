@@ -61,3 +61,9 @@ au BufNewFile,BufRead *.git/config,*/.git/config,.gitconfig setf dosini
 
 " Cython
 au FileType pyrex setlocal textwidth=78
+
+" TextEn
+au FileType texten setlocal textwidth=0 spell spelllang=en
+
+" TextFr
+au FileType textfr setlocal textwidth=0 spell spelllang=fr
