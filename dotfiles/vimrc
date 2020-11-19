@@ -282,7 +282,8 @@ let g:ale_pattern_options = {
 let g:ale_linters = {
 \   'c': ['clang'],
 \   'javascript': ['eslint'],
-\   'typescript': ['tslint', 'tsserver', 'typecheck']
+\   'typescript': ['tslint', 'tsserver', 'typecheck'],
+\   'typescriptreact': ['tslint', 'tsserver', 'typecheck']
 \}
 
 let g:ale_rust_rustc_options = '-o /dev/null'
