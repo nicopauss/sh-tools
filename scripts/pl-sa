@@ -1,0 +1,23 @@
+#!/bin/bash -eu
+
+main() {
+    local pl_arg="$1"
+    local pl_arg_arr
+    local pl_process
+    local pl_sock_prefix
+
+    shift
+
+    readarray -d '/' -t pl_arg_arr <<< "$pl_arg"
+    pl_process="$(tr -d '\n' <<< "${pl_arg_arr[0]:-}")"
+    pl_sock_prefix="$(tr -d '\n' <<< "${pl_arg_arr[1]:-}")"
+
+    # shellcheck disable=SC2155
+    export PLATFORM_MASTER_PID="$(pidof "$pl_process-master")"
+    export PLATFORM_BINDIR="$PWD"
+    export PLATFORM_PREFIX="$PWD/prefix"
+    export PLATFORM_CTLSOCK="@/var/run/$pl_process$pl_sock_prefix-master.ctl"
+    "$@"
+}
+
+main "$@"
