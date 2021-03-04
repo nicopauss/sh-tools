@@ -7,9 +7,9 @@ if [ "$#" -ge 1 ]; then
     shift
     if [ "$RR_DIR" = "latest" ]; then
         RR_DIR=""
-    else
+    elif ! [ -d "$RR_DIR" ]; then
         RR_DIR=$(find ~/.rr/ -maxdepth 1 -iname "$RR_DIR-*" -exec ls -d1t "{}" + | head -n1)
     fi
 fi
 
-rr replay -d cgdb "$RR_DIR" $*
+rr replay -d cgdb "$RR_DIR" "$@"
