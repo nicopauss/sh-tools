@@ -262,24 +262,14 @@ function! AleLintersClangHeaderGetCommand(buffer, output) abort
     return ale_linters#c#clang#GetCommand(a:buffer, a:output)
 endfunction
 
-call ale#linter#Define('c', {
-\   'name': 'clangheader',
-\   'output_stream': 'stderr',
-\   'executable': {b -> ale#Var(b, 'c_clang_executable')},
-\   'command':  {b -> ale#c#RunMakeCommand(
-\       b, function('AleLintersClangHeaderGetCommand')
-\    )},
-\   'callback': 'ale#handlers#gcc#HandleGCCFormatWithIncludes',
-\})
-
 let g:ale_pattern_options = {
 \   '\.h$': {
-\       'ale_linters': ['clangheader']
+\       'ale_linters': ['cc']
 \   }
 \}
 
 let g:ale_linters = {
-\   'c': ['clang'],
+\   'c': ['cc'],
 \   'javascript': ['eslint'],
 \   'typescript': ['tslint', 'tsserver', 'typecheck'],
 \   'typescriptreact': ['tslint', 'tsserver', 'typecheck']
