@@ -1,25 +1,37 @@
-#!/bin/bash
+#!/bin/bash -eu
 
-set -e
+main() {
+    reset=false
+    if [ "$1" == "--reset" ]; then
+        reset=true
+        shift
+    fi
 
-target_branch="$1"
-current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ $# -lt 1 ]; then
+        echo "Error, argument needed"
+        exit 1
+    fi
 
-if [ $# -lt 1 ]; then
-    echo "Error, argument needed"
-    exit 1
-fi
+    target_branch="$1"
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
 
-clean_up() {
-    git checkout $current_branch
-    exit
+    clean_up() {
+        git checkout "$current_branch"
+        exit
+    }
+
+    trap clean_up SIGHUP SIGINT SIGTERM
+
+    echo "local: $current_branch, target: $target_branch"
+
+    git fetch origin
+    git checkout "$target_branch"
+    if $reset; then
+        git reset --hard "origin/$target_branch"
+    else
+        git merge --ff-only "origin/$target_branch"
+    fi
+    clean_up
 }
 
-trap clean_up SIGHUP SIGINT SIGTERM
-
-echo "local: $current_branch, target: $target_branch"
-
-git fetch origin
-git checkout "$target_branch"
-git merge --ff-only "origin/$target_branch"
-clean_up
+main "$@"
