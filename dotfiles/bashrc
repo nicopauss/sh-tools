@@ -94,6 +94,7 @@ function waf-configure {
     (cd "$(git rev-parse --show-toplevel)" && waf configure "$@")
 }
 
+alias wafc='waf-configure'
 alias wafcn='build-nenv waf-configure'
 alias wafcdn='build-denv build-nenv waf-configure'
 alias wafcrn='build-renv build-nenv waf-configure'
