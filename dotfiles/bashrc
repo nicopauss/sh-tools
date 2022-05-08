@@ -74,6 +74,14 @@ function build-noweb-env {
     NO_WWW=1 "$@"
 }
 
+function build-no-www-check-env {
+    NO_WWW_CHECK=1 "$@"
+}
+
+function build-www-dev {
+    WWW_DEV=1 "$@"
+}
+
 function build-denv {
     P=debug "$@"
 }
@@ -106,6 +114,9 @@ alias wafca='build-aenv waf-configure'
 alias baf='build-noweb-env waf'
 alias bafs='no-stderr build-noweb-env waf'
 alias wafs='no-stderr waf'
+alias wwaf='build-no-www-check-env waf'
+alias wdwaf='build-www-dev waf'
+alias wwdwaf='build-no-www-check-env build-www-dev waf'
 
 alias maken='build-nenv make'
 alias makedn='build-denv build-nenv make'
