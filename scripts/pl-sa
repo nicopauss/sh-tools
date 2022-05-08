@@ -16,8 +16,9 @@ main() {
     export PLATFORM_MASTER_PID="$(pidof "$pl_process-master")"
     export PLATFORM_BINDIR="$PWD"
     export PLATFORM_PREFIX="$PWD/prefix"
+    export PLATFORM_HOST_IP="127.0.0.1"
     export PLATFORM_CTLSOCK="@/var/run/$pl_process$pl_sock_prefix-master.ctl"
-    "$@"
+    exec "$@"
 }
 
 main "$@"
