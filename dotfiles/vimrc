@@ -217,6 +217,9 @@ vmap <silent> <expr> p <sid>Repl()
 " quick select pasted text
 noremap gV `[v`]
 
+" Sudo write with 'w!!'
+cabbr w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
+
 " }}}
 " {{{ Plugins options
 
