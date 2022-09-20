@@ -220,6 +220,9 @@ noremap gV `[v`]
 " Sudo write with 'w!!'
 cabbr w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
 
+" Add Gblame abbreviation
+cabbr Gblame Git blame
+
 " }}}
 " {{{ Plugins options
 
