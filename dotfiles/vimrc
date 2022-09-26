@@ -4,7 +4,7 @@ let &rtp = "$HOME/.vim,".s:vimrcdir ."/vim,$VIM/vimfiles,$VIMRUNTIME"
 " Plugins
 call plug#begin("~/.vim/plugged")
 
-Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'tpope/vim-fugitive'
 Plug 'vim-scripts/a.vim'
@@ -12,10 +12,10 @@ Plug 'terryma/vim-expand-region'
 Plug 'airblade/vim-gitgutter'
 Plug 'leafgarland/typescript-vim'
 Plug 'embear/vim-localvimrc'
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'Valloric/YouCompleteMe', { 'do': './install.sh --clang-completer' }
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
 Plug 'rust-lang/rust.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'cespare/vim-toml'
