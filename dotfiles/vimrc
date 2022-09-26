@@ -263,20 +263,6 @@ let g:ale_python_auto_poetry = 1
 highlight link ALEWarningSign String
 highlight link ALEErrorSign Title
 
-function! AleLintersClangHeaderGetCommand(buffer, output) abort
-    let l:c_opts = ale#Var(a:buffer, 'c_clang_options')
-    let l:h_opts = ' -Wno-unused-function -x c-header'
-
-    call setbufvar(a:buffer, 'ale_c_clang_options', l:c_opts . l:h_opts)
-    return ale_linters#c#clang#GetCommand(a:buffer, a:output)
-endfunction
-
-let g:ale_pattern_options = {
-\   '\.h$': {
-\       'ale_linters': ['cc']
-\   }
-\}
-
 let g:ale_linters = {
 \   'c': ['cc'],
 \   'javascript': ['eslint'],
