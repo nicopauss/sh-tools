@@ -46,7 +46,7 @@ if ! which pbpaste >/dev/null; then
 fi
 
 function psax {
-    ps ax | grep --color=always $* | grep -v grep
+    ps ax | grep --color=always "$@" | grep -v grep
 }
 
 function tmux-re {
