@@ -37,11 +37,11 @@ export PS1='\[\e[34;1m\]\u@'\
 '\[\e[31;1m\]\$ '\
 '\[\e[0m\]'
 
-if ! which pbcopy >/dev/null; then
+if ! command -v pbcopy &>/dev/null; then
     alias pbcopy='xclip -selection clipboard'
 fi
 
-if ! which pbpaste >/dev/null; then
+if ! command -v pbpaste &>/dev/null; then
     alias pbpaste='xclip -selection clipboard -o'
 fi
 
