@@ -22,11 +22,17 @@ alias ll='ls -l'
 alias la='ls -A'
 alias l='ls -CF'
 
+if command -v __git_ps1 &>/dev/null; then
+    alias _bashrc_git_ps1=__git_ps1
+else
+    alias _bashrc_git_ps1=true
+fi
+
 export GIT_PS1_SHOWSTASHSTATE=1
 export PS1='\[\e[34;1m\]\u@'\
 '\[\e[32;1m\]\H:'\
 '$(ret=$?; if [ $ret -ne 0 ]; then echo " \[\e[31;7m\]"$ret"\[\e[0m\]"; fi)'\
-'\[\e[31;1m\]$(__git_ps1) '\
+'\[\e[31;1m\]$(_bashrc_git_ps1) '\
 '\[\e[0m\]\w'\
 '\[\e[31;1m\]\$ '\
 '\[\e[0m\]'
