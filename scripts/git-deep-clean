@@ -1,9 +1,11 @@
 #!/bin/sh -eu
 
+clean_args="${1:--ffXdd}"
+
 cd "$(git rev-parse --show-toplevel)"
-if ! git clean -ffxxd; then
-    sudo git clean -ffxxd
+if ! git clean "$clean_args"; then
+    sudo git clean "$clean_args"
 fi
-if ! git submodule foreach git clean -ffxxd; then
-    sudo git submodule foreach git clean -ffxxd
+if ! git submodule foreach git clean "$clean_args"; then
+    sudo git submodule foreach git clean "$clean_args"
 fi
