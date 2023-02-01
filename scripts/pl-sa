@@ -11,6 +11,7 @@ main() {
     readarray -d '/' -t pl_arg_arr <<< "$pl_arg"
     pl_process="$(tr -d '\n' <<< "${pl_arg_arr[0]:-}")"
     pl_sock_prefix="$(tr -d '\n' <<< "${pl_arg_arr[1]:-}")"
+    pl_service_name="$(tr -d '\n' <<< "${pl_arg_arr[2]:-}")"
 
     # shellcheck disable=SC2155
     export PLATFORM_MASTER_PID="$(pidof "$pl_process-master")"
@@ -18,6 +19,9 @@ main() {
     export PLATFORM_PREFIX="$PWD/prefix"
     export PLATFORM_HOST_IP="127.0.0.1"
     export PLATFORM_CTLSOCK="@/var/run/$pl_process$pl_sock_prefix-master.ctl"
+    if [ -n "$pl_service_name" ]; then
+        export PLATFORM_SERVICE_NAME="$pl_service_name"
+    fi
     exec "$@"
 }
 
