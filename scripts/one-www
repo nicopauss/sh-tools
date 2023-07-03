@@ -3,7 +3,7 @@
 # shellcheck disable=SC2155
 
 if [ "$#" -lt 2 ]; then
-    echo "usage: $0 Z_WWW_PREFIX [Firefox] cmd [args...]"
+    echo "usage: $0 Z_WWW_PREFIX [Chrome] cmd [args...]"
     exit 1
 fi
 
@@ -11,12 +11,12 @@ export Z_WWW_HOST="localhost"
 export Z_WWW_PREFIX=$1
 shift
 
-if [ "$1" = "Firefox" ]; then
-    export Z_WWW_BROWSER="Firefox"
-    export Z_WWW_BIN_PATH="$(command -v firefox)"
+if [ "$1" = "Chrome" ]; then
+    export Z_WWW_BROWSER="Chrome"
     shift
 else
-    export Z_WWW_BROWSER="Chrome"
+    export Z_WWW_BROWSER="Firefox"
+    export Z_WWW_BIN_PATH="$(command -v firefox)"
 fi
 
 params=""
