@@ -308,6 +308,9 @@ if &term =~ '^screen'
     execute "set <xLeft>=\e[1;*D"
 endif
 
+" Bufexplorer
+let g:bufExplorerShowRelativePath = 1
+
 " }}}
 " {{{ Colors
 
