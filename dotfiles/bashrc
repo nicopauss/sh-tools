@@ -105,7 +105,16 @@ function no-stderr {
 }
 
 function waf-configure {
-    (cd "$(git rev-parse --show-toplevel)" && waf configure "$@")
+    # waf configure with fast environment variables
+    # Always execute waf at the root of the repository
+    local exit_code
+
+    pushd "$(git rev-parse --show-toplevel)" || return 1
+    waf configure "$@"
+    exit_code=$?
+    popd || return 1
+
+    return $exit_code
 }
 
 alias wafc='waf-configure'
