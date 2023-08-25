@@ -51,6 +51,9 @@ set report=0
 set laststatus=2
 set foldmethod=marker
 
+set spell
+set spelllang=en_us
+
 set number
 
 " Restore cursor position
