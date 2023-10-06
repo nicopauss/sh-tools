@@ -52,7 +52,7 @@ set laststatus=2
 set foldmethod=marker
 
 set spell
-set spelllang=en_us
+set spelllang=en
 
 set number
 
