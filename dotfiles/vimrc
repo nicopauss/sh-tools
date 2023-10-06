@@ -19,6 +19,7 @@ Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
 Plug 'rust-lang/rust.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'cespare/vim-toml'
+Plug 'mbbill/undotree'
 
 call plug#end()
 
