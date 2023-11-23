@@ -149,3 +149,12 @@ alias makeans='no-stderr build-aenv build-nenv make'
 alias makeds='no-stderr build-denv make'
 alias makers='no-stderr build-renv make'
 alias makeas='no-stderr build-aenv make'
+
+
+function mkdirclean {
+    rm -rf "$@" && mkdir "$@"
+}
+
+function mkdircd {
+    mkdir "$@" && cd "$@" || return 1
+}
