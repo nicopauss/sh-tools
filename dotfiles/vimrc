@@ -267,14 +267,16 @@ let g:ale_lint_on_text_changed = 0
 let g:ale_lint_on_enter = 1
 let g:ale_lint_on_save = 1
 let g:ale_completion_enabled = 0
-let g:ale_python_auto_pipenv = 1
+let g:ale_python_auto_pipenv = 0
 let g:ale_python_auto_poetry = 1
+let g:ale_c_parse_compile_commands = 1
 
 highlight link ALEWarningSign String
 highlight link ALEErrorSign Title
 
 let g:ale_linters = {
 \   'c': ['cc'],
+\   'python': ['pylint', 'mypy'],
 \   'javascript': ['eslint'],
 \   'typescript': ['eslint', 'tsserver', 'typecheck'],
 \   'typescriptreact': ['eslint', 'tsserver', 'typecheck']
@@ -282,11 +284,19 @@ let g:ale_linters = {
 
 let g:ale_rust_rustc_options = '-o /dev/null'
 
+let g:ale_lsp_show_message_severity = 'information'
+let g:ale_c_clangd_options = '--background-index -j4 -header-insertion-decorators=0 -limit-results=20 --pch-storage=disk'
+"let g:ale_command_wrapper = '~/.local/bin/ale-command-wrapper.sh'
+
 " YCM
 let g:ycm_show_diagnostics_ui = 0
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_register_as_syntastic_checker = 0
 let g:ycm_global_ycm_extra_conf = s:vimrcdir.'/../conf/ycm_default_conf.py'
+
+let g:ycm_use_clangd = 1
+let g:ycm_clangd_args = ['--background-index', '-j4', '-header-insertion-decorators=0', '-limit-results=20', '--pch-storage=disk']
+let g:ycm_clangd_binary_path = 'clangd'
 
 " a.vim
 let g:alternateRelativeFiles   = 1
