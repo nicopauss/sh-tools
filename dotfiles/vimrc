@@ -183,7 +183,7 @@ else
 end
 
 " better grep
-command! -nargs=+ Ggr execute "silent Ggrep!" <q-args> | cw | redraw!
+command! -nargs=+ Ggr execute "Ggrep! -q --recurse-submodules" <q-args>
 map <F4> :Ggr <cword><cr>
 
 " close current buffer and move to next
