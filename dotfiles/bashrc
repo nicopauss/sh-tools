@@ -133,6 +133,8 @@ alias wwaf='build-no-www-check-env waf'
 alias wdwaf='build-www-dev waf'
 alias wwdwaf='build-no-www-check-env build-www-dev waf'
 
+alias wfc='wafcdn && wwaf'
+
 alias maken='build-nenv make'
 alias makedn='build-denv build-nenv make'
 alias makern='build-renv build-nenv make'
