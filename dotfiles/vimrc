@@ -42,6 +42,7 @@ set hidden
 set esckeys
 set listchars=eol:\ ,tab:>-,trail:-,extends:>,precedes:<,nbsp:¤
 set list
+set formatoptions=tcroqn
 
 set ruler
 set modeline
