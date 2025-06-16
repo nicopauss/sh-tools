@@ -133,7 +133,7 @@ map <S-Left> :lprev<cr>
 map <F2> <C-]>
 
 " bufExplorer
-map <F3> <Leader>bs
+map <F3> :BufExplorer<cr>
 
 " grep on the current word
 map <F4> :gr! -w <cword><cr>
@@ -325,7 +325,10 @@ if &term =~ '^screen'
 endif
 
 " Bufexplorer
+let g:bufExplorerFindActive = 0
+let g:bufExplorerSplitOutPathName = 1
 let g:bufExplorerShowRelativePath = 1
+let g:bufExplorerSortBy = 'mru'
 
 " }}}
 " {{{ Colors
