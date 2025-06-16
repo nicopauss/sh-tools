@@ -14,6 +14,8 @@ if has('nvim')
     let g:python3_host_prog = '$HOME/.venvs/nvim/bin/python3'
 endif
 
+let s:use_ale = 1
+
 " Plugins
 let plug_dir = '~/.vim/plugged'
 if has('nvim')
@@ -46,8 +48,13 @@ if has('nvim')
     Plug 'quangnguyen30192/cmp-nvim-ultisnips'
     Plug 'Saghen/blink.compat'
 
-    Plug 'williamboman/mason.nvim' " to install LSP servers
-    Plug 'neovim/nvim-lspconfig' " config for LSP servers
+    if s:use_ale
+        Plug 'dense-analysis/ale'
+        Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
+    else
+        Plug 'williamboman/mason.nvim' " to install LSP servers
+        Plug 'neovim/nvim-lspconfig' " config for LSP servers
+    endif
 
     Plug 'nvim-lua/plenary.nvim' " minuet dependency
     Plug 'milanglacier/minuet-ai.nvim' " AI autocompletion
@@ -75,7 +82,9 @@ if has('nvim')
     " in /config directory is the configurations for neovim plugins
     lua require('plugins/blink')
     lua require('plugins/minuet')
-    lua require('plugins/lspconfig')
+    if !s:use_ale
+        lua require('plugins/lspconfig')
+    endif
     lua require('plugins/tiny-inline-diagnostic')
     lua require('plugins/telescope')
     lua require('plugins/trouble')
@@ -327,7 +336,9 @@ let g:localvimrc_whitelist = $HOME.'/dev/'
 
 " Ale
 
-let g:ale_open_list = 1
+if !has('nvim')
+    let g:ale_open_list = 1
+endif
 let g:airline#extensions#ale#enabled = 1
 let g:ale_set_balloons = 0
 let g:ale_lint_on_text_changed = 0

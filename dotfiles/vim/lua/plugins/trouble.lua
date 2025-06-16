@@ -5,6 +5,9 @@ require("trouble").setup({
         diagnostics = {
             auto_open = true,
             auto_close = true,
+            auto_preview = false,
+            restore = false,
+            follow = true,
         },
     }
 })
