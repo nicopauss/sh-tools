@@ -1,8 +1,26 @@
 let s:vimrcdir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 let &rtp = "$HOME/.vim,".s:vimrcdir ."/vim,$VIM/vimfiles,$VIMRUNTIME"
 
+execute "set rtp+=".s:vimrcdir."/vim/after"
+set rtp+=$VIM/vimfiles/after,$HOME/.vim/after,~/.local/share/nvim/site/after,~/.config/nvim/after
+
+" Node of the global env is changed based on mmsx version etc. which can
+" break some plugins if old node is used.
+let $PATH = expand('$HOME/.asdf/installs/nodejs/24.0.2/bin:').$PATH
+
+if has('nvim')
+    " Some plugins, such as UltiSnip, require this. The nvim python plugin
+    " must be installed first in the following virtual env.
+    let g:python3_host_prog = '$HOME/.venvs/nvim/bin/python3'
+endif
+
 " Plugins
-call plug#begin("~/.vim/plugged")
+let plug_dir = '~/.vim/plugged'
+if has('nvim')
+  let plug_dir = stdpath('data') . '/plugged'
+end
+
+call plug#begin(plug_dir)
 
 Plug 'vim-airline/vim-airline'
 Plug 'jlanzarotta/bufexplorer'
@@ -12,17 +30,58 @@ Plug 'vim-scripts/LargeFile'
 Plug 'terryma/vim-expand-region'
 Plug 'airblade/vim-gitgutter'
 Plug 'leafgarland/typescript-vim'
-Plug 'embear/vim-localvimrc'
-Plug 'dense-analysis/ale'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
 Plug 'rust-lang/rust.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'cespare/vim-toml'
 Plug 'mbbill/undotree'
 
+if has('nvim')
+    Plug 'EdenEast/nightfox.nvim' " colorscheme
+
+    " It is important to use tagged release otherwise no binaries
+    " are available (binary is used for the fuzzy finder)
+    Plug 'Saghen/blink.cmp', { 'tag': '*' }
+    Plug 'quangnguyen30192/cmp-nvim-ultisnips'
+    Plug 'Saghen/blink.compat'
+
+    Plug 'williamboman/mason.nvim' " to install LSP servers
+    Plug 'neovim/nvim-lspconfig' " config for LSP servers
+
+    Plug 'nvim-lua/plenary.nvim' " minuet dependency
+    Plug 'milanglacier/minuet-ai.nvim' " AI autocompletion
+
+    Plug 'rachartier/tiny-inline-diagnostic.nvim'
+
+    Plug 'nvim-lua/plenary.nvim'
+    Plug 'nvim-telescope/telescope.nvim'
+
+    " List of errors, bottom of screen
+    Plug 'folke/trouble.nvim'
+
+    " File explorer
+    Plug 'stevearc/oil.nvim'
+
+    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate', 'branch': 'master'}
+else
+    Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
+    Plug 'dense-analysis/ale'
+endif
+
 call plug#end()
+
+if has('nvim')
+    " in /config directory is the configurations for neovim plugins
+    lua require('plugins/blink')
+    lua require('plugins/minuet')
+    lua require('plugins/lspconfig')
+    lua require('plugins/tiny-inline-diagnostic')
+    lua require('plugins/telescope')
+    lua require('plugins/trouble')
+    lua require('plugins/oil')
+    lua require('plugins/treesitter')
+endif
 
 " {{{ Various options
 
@@ -39,7 +98,9 @@ set hlsearch
 
 set autoindent
 set hidden
-set esckeys
+if !has('nvim')
+    set esckeys
+end
 set listchars=eol:\ ,tab:>-,trail:-,extends:>,precedes:<,nbsp:¤
 set list
 set formatoptions=tcroqn
@@ -138,7 +199,10 @@ map <F3> :BufExplorer<cr>
 " grep on the current word
 map <F4> :gr! -w <cword><cr>
 
-set pastetoggle=<F5>
+if !has('nvim')
+  " Not useful on nvim which automatically sets paste mode when pasting
+  set pastetoggle=<F5>
+end
 
 nnoremap <F6> :nohlsearch<CR>
 
@@ -177,10 +241,12 @@ map <S-Down> <C-E>
 
 " mouse
 set mouse+=a
-if has("mouse_sgr")
-    set ttymouse=sgr
-else
-    set ttymouse=xterm2
+if !has('nvim')
+    if has("mouse_sgr")
+        set ttymouse=sgr
+    else
+        set ttymouse=xterm2
+    end
 end
 
 " better grep
@@ -315,8 +381,10 @@ vmap <C-v> <Plug>(expand_region_shrink)
 
 " Tmux
 if &term =~ '^screen'
-    " tmux knows the extended mouse mode
-    set ttymouse=sgr
+    if !has('nvim')
+        " tmux knows the extended mouse mode
+        set ttymouse=sgr
+    endif
     " tmux will send xterm-style keys when xterm-keys is on
     execute "set <xUp>=\e[1;*A"
     execute "set <xDown>=\e[1;*B"
@@ -333,38 +401,46 @@ let g:bufExplorerSortBy = 'mru'
 " }}}
 " {{{ Colors
 
-set background=light
-hi Comment      cterm=none       ctermfg=blue       ctermbg=none
-hi doxygenBrief cterm=none       ctermfg=cyan       ctermbg=none
-hi Folded       cterm=none       ctermfg=brown      ctermbg=none
+if has('nvim')
+    colorscheme carbonfox
+else
+    set background=light
+    hi Comment      cterm=none       ctermfg=blue       ctermbg=none
+    hi doxygenBrief cterm=none       ctermfg=cyan       ctermbg=none
+    hi Folded       cterm=none       ctermfg=brown      ctermbg=none
 
-hi Visual       cterm=reverse    ctermfg=none       ctermbg=none
-hi Search       cterm=none       ctermfg=black      ctermbg=lightblue
-hi IncSearch    cterm=underline  ctermfg=white      ctermbg=darkblue
+    hi Visual       cterm=reverse    ctermfg=none       ctermbg=none
+    hi Search       cterm=none       ctermfg=black      ctermbg=lightblue
+    hi IncSearch    cterm=underline  ctermfg=white      ctermbg=darkblue
 
-hi StatusLine   cterm=none       ctermfg=white      ctermbg=blue
-hi StatusLineNc cterm=none       ctermfg=black      ctermbg=white
-hi WildMenu     cterm=none       ctermfg=white      ctermbg=none
-hi VertSplit    cterm=none       ctermfg=darkgray   ctermbg=none
-hi NonText      cterm=none       ctermfg=darkgray   ctermbg=none
+    hi StatusLine   cterm=none       ctermfg=white      ctermbg=blue
+    hi StatusLineNc cterm=none       ctermfg=black      ctermbg=white
+    hi WildMenu     cterm=none       ctermfg=white      ctermbg=none
+    hi VertSplit    cterm=none       ctermfg=darkgray   ctermbg=none
+    hi NonText      cterm=none       ctermfg=darkgray   ctermbg=none
 
-hi MatchParen   cterm=underline  ctermfg=none       ctermbg=none
-hi Pmenu        cterm=none       ctermfg=white      ctermbg=darkgray
-hi PmenuSel     cterm=none       ctermfg=white      ctermbg=gray
-hi PmenuSbar    cterm=none       ctermfg=blue       ctermbg=blue
-hi PmenuThumb   cterm=none       ctermfg=gray       ctermbg=gray
+    hi MatchParen   cterm=underline  ctermfg=none       ctermbg=none
+    hi Pmenu        cterm=none       ctermfg=white      ctermbg=darkgray
+    hi PmenuSel     cterm=none       ctermfg=white      ctermbg=gray
+    hi PmenuSbar    cterm=none       ctermfg=blue       ctermbg=blue
+    hi PmenuThumb   cterm=none       ctermfg=gray       ctermbg=gray
 
-hi SpellBad     cterm=underline  ctermfg=lightred   ctermbg=none
-hi SpellCap     cterm=none       ctermfg=lightred   ctermbg=none
-hi SpellLocal   cterm=underline  ctermfg=darkgreen  ctermbg=none
-hi SpellRare    cterm=none       ctermfg=none       ctermbg=none
+    hi SpellBad     cterm=underline  ctermfg=lightred   ctermbg=none
+    hi SpellCap     cterm=none       ctermfg=lightred   ctermbg=none
+    hi SpellLocal   cterm=underline  ctermfg=darkgreen  ctermbg=none
+    hi SpellRare    cterm=none       ctermfg=none       ctermbg=none
 
-hi javaScriptTpl     cterm=none  ctermfg=darkgreen  ctermbg=none
-hi javaScriptTplMark cterm=none  ctermfg=magenta    ctermbg=none
+    hi javaScriptTpl     cterm=none  ctermfg=darkgreen  ctermbg=none
+    hi javaScriptTplMark cterm=none  ctermfg=magenta    ctermbg=none
 
-hi DiffAdd    cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-hi DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-hi DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-hi DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
+    hi DiffAdd    cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+    hi DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+    hi DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+    hi DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
+endif
 
 " }}}
+
+if has("nvim")
+    lua require('mappings')
+end
