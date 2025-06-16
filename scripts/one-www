@@ -16,7 +16,7 @@ if [ "$1" = "Chrome" ]; then
     shift
 else
     export Z_WWW_BROWSER="Firefox"
-    export Z_WWW_BIN_PATH="$(command -v firefox)"
+    export Z_WWW_BIN_PATH="/home/pauss/opt/firefox/firefox"
 fi
 
 params=""
