@@ -40,7 +40,7 @@ Plug 'cespare/vim-toml'
 Plug 'mbbill/undotree'
 
 if has('nvim')
-    Plug 'EdenEast/nightfox.nvim' " colorscheme
+    Plug 'projekt0n/github-nvim-theme' " colorscheme
 
     " It is important to use tagged release otherwise no binaries
     " are available (binary is used for the fuzzy finder)
@@ -413,7 +413,7 @@ let g:bufExplorerSortBy = 'mru'
 " {{{ Colors
 
 if has('nvim')
-    colorscheme carbonfox
+    colorscheme github_dark_default
 else
     set background=light
     hi Comment      cterm=none       ctermfg=blue       ctermbg=none
