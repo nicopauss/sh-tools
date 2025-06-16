@@ -277,7 +277,7 @@ highlight link ALEErrorSign Title
 
 let g:ale_linters = {
 \   'c': ['cc'],
-\   'python': ['pylint', 'mypy'],
+\   'python': ['pylint', 'mypy', 'ruff'],
 \   'javascript': ['eslint'],
 \   'typescript': ['eslint', 'tsserver', 'typecheck'],
 \   'typescriptreact': ['eslint', 'tsserver', 'typecheck']
