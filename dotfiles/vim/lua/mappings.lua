@@ -5,7 +5,7 @@ local map = vim.keymap.set
 -- Define <leader> as a space.
 -- Space is the best leader key because no native mappings uses it and it is very
 -- accessible with both hands. It's accessible via thumbs, which are rarely used.
-vim.cmd('let mapleader = " "')
+-- vim.cmd('let mapleader = " "')
 
 -- <A-t> means alt+t
 map("n", "<A-t>", "<cmd>Minuet virtualtext toggle<cr>")

@@ -10,6 +10,11 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
+" Use TreeSitter for nvim
+if has('nvim')
+    finish
+endif
+
 setlocal expandtab
 setlocal nolisp
 setlocal autoindent

@@ -50,7 +50,7 @@ if has('nvim')
 
     if s:use_ale
         Plug 'dense-analysis/ale'
-        Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
+        " Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
     else
         Plug 'williamboman/mason.nvim' " to install LSP servers
         Plug 'neovim/nvim-lspconfig' " config for LSP servers
