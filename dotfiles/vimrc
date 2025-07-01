@@ -48,16 +48,16 @@ if has('nvim')
     Plug 'quangnguyen30192/cmp-nvim-ultisnips'
     Plug 'Saghen/blink.compat'
 
+    Plug 'williamboman/mason.nvim' " to install LSP servers
+    Plug 'neovim/nvim-lspconfig' " config for LSP servers
     if s:use_ale
         Plug 'dense-analysis/ale'
         " Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
-    else
-        Plug 'williamboman/mason.nvim' " to install LSP servers
-        Plug 'neovim/nvim-lspconfig' " config for LSP servers
     endif
 
     Plug 'nvim-lua/plenary.nvim' " minuet dependency
     Plug 'milanglacier/minuet-ai.nvim' " AI autocompletion
+    Plug 'olimorris/codecompanion.nvim'
 
     Plug 'rachartier/tiny-inline-diagnostic.nvim'
 
@@ -82,14 +82,13 @@ if has('nvim')
     " in /config directory is the configurations for neovim plugins
     lua require('plugins/blink')
     lua require('plugins/minuet')
-    if !s:use_ale
-        lua require('plugins/lspconfig')
-    endif
+    lua require('plugins/lspconfig')
     lua require('plugins/tiny-inline-diagnostic')
     lua require('plugins/telescope')
     lua require('plugins/trouble')
     lua require('plugins/oil')
     lua require('plugins/treesitter')
+    lua require('plugins/codecompanion')
 endif
 
 " {{{ Various options

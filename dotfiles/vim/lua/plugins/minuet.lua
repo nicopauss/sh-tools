@@ -1,4 +1,4 @@
-local ai_manual_completion = vim.g.ai_manual_completion
+local ai_manual_completion = true
 local endpoint = 'https://api.mistral.ai/v1/fim/completions'
 local qwerty = vim.g.qwerty
 local api_key = os.getenv('CODESTRAL_API_KEY')
