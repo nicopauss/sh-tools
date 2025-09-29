@@ -74,6 +74,7 @@ if has('nvim')
 else
     Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
     Plug 'dense-analysis/ale'
+    Plug 'jasonccox/vim-wayland-clipboard'
 endif
 
 call plug#end()
