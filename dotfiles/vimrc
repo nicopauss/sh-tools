@@ -410,6 +410,9 @@ let g:bufExplorerSplitOutPathName = 1
 let g:bufExplorerShowRelativePath = 1
 let g:bufExplorerSortBy = 'mru'
 
+" Open all folds when open a YAML file
+autocmd Syntax yaml normal zR
+
 " }}}
 " {{{ Colors
 
