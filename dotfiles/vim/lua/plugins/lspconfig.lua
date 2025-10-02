@@ -1,20 +1,3 @@
-function get_pylint_exec()
-    local venv = os.getenv("VIRTUAL_ENV")
-    local pylint_executable = "pylint"
-    if venv ~= nil then
-        if vim.fn.executable(venv .. "/bin/pylint") == 1 then
-            pylint_executable = venv .. "/bin/pylint"
-        else
-            vim.notify(
-                "pylint not found in virtual environment: " .. venv
-                .. ". It may not resolve depencies correctly. `pip install pylint` in your venv",
-                vim.log.levels.WARN
-            )
-        end
-    end
-    return pylint_executable
-end
-
 -- Every server used here must be added in the install script nvim_install.sh
 require("mason").setup()
 vim.lsp.enable('clangd')
@@ -39,7 +22,6 @@ vim.lsp.config('pylsp', {
                 },
                 pylint = {
                     enabled = true,
-                    executable = get_pylint_exec(),
                 },
                 -- Disable all other linters
                 pyflakes = {
