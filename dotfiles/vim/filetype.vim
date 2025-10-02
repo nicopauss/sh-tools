@@ -3,7 +3,7 @@ if exists("did_load_filetypes")
 endif
 
 " C/C++
-au FileType c,cpp setlocal noignorecase textwidth=78
+au FileType c,cpp setlocal textwidth=78
 au BufRead,BufNewFile *.blk,*.fc,*.h setf c
 au BufRead,BufNewFile *.blkk,*.hpp setf cpp
 
@@ -12,12 +12,13 @@ let c_space_errors=1
 let c_no_curly_errors=1
 
 " IOP
-au FileType d setlocal noignorecase textwidth=78
+au FileType d setlocal textwidth=78
 au BufRead,BufNewFile *.iop setf d
 
 " Javascript
-au FileType javascript setlocal cindent cinoptions-=L0.5s noignorecase textwidth=78 iskeyword+=$
+au FileType javascript,typescript setlocal textwidth=120 colorcolumn=78,120 iskeyword+=$
 au BufRead,BufNewFile *.cf setf json
+au BufRead,BufNewFile *.tsx setf typescript
 
 " PHP
 au FileType php setlocal et fo+=ro indentexpr= cin
@@ -51,7 +52,7 @@ let g:is_bash=1
 au FileType diff setlocal nofoldenable
 
 " Asciidoc
-au FileType asciidoc setlocal spell spelllang=en_us
+au FileType asciidoc setlocal spell spelllang=en_us textwidth=78
 au BufRead,BufNewFile *.adoc setf asciidoc
 
 " Git commit message
