@@ -5,7 +5,6 @@ local api_key = os.getenv('CODESTRAL_API_KEY')
 
 if api_key and api_key ~= '' then
     require('minuet').setup({
-        notify = 'debug',
         throttle = 1000,
         debounce = 350,
         virtualtext = {
