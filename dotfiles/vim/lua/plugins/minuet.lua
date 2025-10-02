@@ -24,7 +24,7 @@ if api_key and api_key ~= '' then
           },
         },
         provider = 'codestral',
-        n_completions = 3,
+        n_completions = 1,
         context_window = 20000,
         provider_options = {
           codestral = {
