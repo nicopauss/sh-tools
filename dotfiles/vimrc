@@ -38,6 +38,7 @@ Plug 'rust-lang/rust.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'cespare/vim-toml'
 Plug 'mbbill/undotree'
+Plug 'pedrohdz/vim-yaml-folds'
 
 if has('nvim')
     Plug 'projekt0n/github-nvim-theme' " colorscheme
