@@ -308,7 +308,8 @@ noremap gV `[v`]
 cabbr w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
 
 " Add Gblame abbreviation
-cabbr Gblame Git blame
+command! Gblame execute "Git blame"
+command! GBlame execute "Git blame"
 
 " }}}
 " {{{ Plugins options
