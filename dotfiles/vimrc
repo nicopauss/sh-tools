@@ -41,8 +41,6 @@ Plug 'mbbill/undotree'
 Plug 'pedrohdz/vim-yaml-folds'
 
 if has('nvim')
-    Plug 'projekt0n/github-nvim-theme' " colorscheme
-
     " It is important to use tagged release otherwise no binaries
     " are available (binary is used for the fuzzy finder)
     Plug 'Saghen/blink.cmp', { 'tag': '*' }
@@ -418,42 +416,46 @@ autocmd Syntax yaml normal zR
 " {{{ Colors
 
 if has('nvim')
-    colorscheme github_dark_default
-else
-    set background=light
-    hi Comment      cterm=none       ctermfg=blue       ctermbg=none
-    hi doxygenBrief cterm=none       ctermfg=cyan       ctermbg=none
-    hi Folded       cterm=none       ctermfg=brown      ctermbg=none
-
-    hi Visual       cterm=reverse    ctermfg=none       ctermbg=none
-    hi Search       cterm=none       ctermfg=black      ctermbg=lightblue
-    hi IncSearch    cterm=underline  ctermfg=white      ctermbg=darkblue
-
-    hi StatusLine   cterm=none       ctermfg=white      ctermbg=blue
-    hi StatusLineNc cterm=none       ctermfg=black      ctermbg=white
-    hi WildMenu     cterm=none       ctermfg=white      ctermbg=none
-    hi VertSplit    cterm=none       ctermfg=darkgray   ctermbg=none
-    hi NonText      cterm=none       ctermfg=darkgray   ctermbg=none
-
-    hi MatchParen   cterm=underline  ctermfg=none       ctermbg=none
-    hi Pmenu        cterm=none       ctermfg=white      ctermbg=darkgray
-    hi PmenuSel     cterm=none       ctermfg=white      ctermbg=gray
-    hi PmenuSbar    cterm=none       ctermfg=blue       ctermbg=blue
-    hi PmenuThumb   cterm=none       ctermfg=gray       ctermbg=gray
-
-    hi SpellBad     cterm=underline  ctermfg=lightred   ctermbg=none
-    hi SpellCap     cterm=none       ctermfg=lightred   ctermbg=none
-    hi SpellLocal   cterm=underline  ctermfg=darkgreen  ctermbg=none
-    hi SpellRare    cterm=none       ctermfg=none       ctermbg=none
-
-    hi javaScriptTpl     cterm=none  ctermfg=darkgreen  ctermbg=none
-    hi javaScriptTplMark cterm=none  ctermfg=magenta    ctermbg=none
-
-    hi DiffAdd    cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-    hi DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-    hi DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-    hi DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
+    set notermguicolors
+    colorscheme vim
 endif
+set background=light
+hi Comment      cterm=none       ctermfg=blue       ctermbg=none
+hi doxygenBrief cterm=none       ctermfg=cyan       ctermbg=none
+hi Folded       cterm=none       ctermfg=brown      ctermbg=none
+
+hi Visual       cterm=reverse    ctermfg=none       ctermbg=none
+hi Search       cterm=none       ctermfg=black      ctermbg=lightblue
+hi IncSearch    cterm=underline  ctermfg=white      ctermbg=darkblue
+
+hi StatusLine   cterm=none       ctermfg=white      ctermbg=blue
+hi StatusLineNc cterm=none       ctermfg=black      ctermbg=white
+hi WildMenu     cterm=none       ctermfg=white      ctermbg=none
+hi VertSplit    cterm=none       ctermfg=darkgray   ctermbg=none
+hi NonText      cterm=none       ctermfg=darkgray   ctermbg=none
+
+hi MatchParen   cterm=underline  ctermfg=none       ctermbg=none
+hi Pmenu        cterm=none       ctermfg=white      ctermbg=darkgray
+hi PmenuSel     cterm=none       ctermfg=white      ctermbg=gray
+hi PmenuSbar    cterm=none       ctermfg=blue       ctermbg=blue
+hi PmenuThumb   cterm=none       ctermfg=gray       ctermbg=gray
+
+hi SpellBad     cterm=underline  ctermfg=lightred   ctermbg=none
+hi SpellCap     cterm=none       ctermfg=lightred   ctermbg=none
+hi SpellLocal   cterm=underline  ctermfg=darkgreen  ctermbg=none
+hi SpellRare    cterm=none       ctermfg=none       ctermbg=none
+
+hi javaScriptTpl     cterm=none  ctermfg=darkgreen  ctermbg=none
+hi javaScriptTplMark cterm=none  ctermfg=magenta    ctermbg=none
+
+hi DiffAdd    cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+hi DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+hi DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+hi DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
+
+hi TroubleNormalNC  cterm=none       ctermfg=none      ctermbg=none
+hi TroubleNormal    cterm=none       ctermfg=none      ctermbg=none
+hi TroublePreview   cterm=none       ctermfg=none      ctermbg=none
 
 " }}}
 
