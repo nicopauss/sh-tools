@@ -14,7 +14,7 @@ if has('nvim')
     let g:python3_host_prog = '$HOME/.venvs/nvim/bin/python3'
 endif
 
-let s:use_ale = 1
+let s:use_ale = 0
 
 " Plugins
 let plug_dir = '~/.vim/plugged'
