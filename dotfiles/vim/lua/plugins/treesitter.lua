@@ -24,6 +24,6 @@ require'nvim-treesitter.configs'.setup {
 
   -- Bad at Python indenting
   indent = {
-    enable = false,
+    enable = true,
   },
 }
