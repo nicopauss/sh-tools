@@ -70,6 +70,12 @@ if has('nvim')
     Plug 'stevearc/oil.nvim'
 
     Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate', 'branch': 'master'}
+
+    " Debugger
+    Plug 'mfussenegger/nvim-dap'
+    Plug 'mfussenegger/nvim-dap-python'
+    Plug 'nvim-neotest/nvim-nio'
+    Plug 'rcarriga/nvim-dap-ui'
 else
     Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
     Plug 'dense-analysis/ale'
@@ -89,6 +95,7 @@ if has('nvim')
     lua require('plugins/oil')
     lua require('plugins/treesitter')
     lua require('plugins/codecompanion')
+    lua require('plugins/dap')
 endif
 
 " {{{ Various options
