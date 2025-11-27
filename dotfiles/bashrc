@@ -38,11 +38,19 @@ export PS1='\[\e[34;1m\]\u@'\
 '\[\e[0m\]'
 
 if ! command -v pbcopy &>/dev/null; then
-    alias pbcopy='xclip -selection clipboard'
+    if [ "$XDG_SESSION_TYPE" = 'wayland' ]; then
+        alias pbcopy='wl-copy'
+    else
+        alias pbcopy='xclip -selection clipboard'
+    fi
 fi
 
 if ! command -v pbpaste &>/dev/null; then
-    alias pbpaste='xclip -selection clipboard -o'
+    if [ "$XDG_SESSION_TYPE" = 'wayland' ]; then
+        alias pbpaste='wl-paste'
+    else
+        alias pbpaste='xclip -selection clipboard -o'
+    fi
 fi
 
 if command -v nvim &>/dev/null; then
