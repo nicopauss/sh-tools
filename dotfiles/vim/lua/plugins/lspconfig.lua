@@ -20,7 +20,7 @@ vim.lsp.config('pylsp', {
                     enabled = true,
                 },
                 pylint = {
-                    enabled = true,
+                    enabled = false,
                 },
                 -- Disable all other linters
                 pyflakes = {
