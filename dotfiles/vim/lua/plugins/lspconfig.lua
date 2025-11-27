@@ -1,6 +1,5 @@
 -- Every server used here must be added in the install script nvim_install.sh
 require("mason").setup()
-vim.lsp.enable('clangd')
 vim.lsp.enable('eslint')
 vim.lsp.enable('ts_ls')
 vim.lsp.enable('ruff')
@@ -71,3 +70,9 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     vim.lsp.buf.format({ async = false })
   end,
 })
+
+-- Clangd
+vim.lsp.config('clangd', {
+    cmd = {"clangd", "--header-insertion=never"}
+})
+vim.lsp.enable('clangd')
