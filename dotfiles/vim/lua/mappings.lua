@@ -50,7 +50,7 @@ map("n", "<leader>tG", "<cmd>Telescope grep_string<cr>")
 map("n", "<leader>tr", "<cmd>Telescope resume<cr>")
 -- Reopen last search (so useful)
 map("n", "<leader>tz", "<cmd>Telescope buffers<cr>")
-map("n", "<leader>tl", "<cmd>Telescope find_files<cr>")
+map("n", "<leader>tf", "<cmd>Telescope find_files<cr>")
 
 -- Open a new window with same file as current buffer
 map("n", "<leader>bh", "<cmd>vsplit<cr>")
