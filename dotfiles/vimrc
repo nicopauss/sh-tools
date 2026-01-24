@@ -43,7 +43,6 @@ if has('nvim')
     " It is important to use tagged release otherwise no binaries
     " are available (binary is used for the fuzzy finder)
     Plug 'Saghen/blink.cmp', { 'tag': '*' }
-    Plug 'quangnguyen30192/cmp-nvim-ultisnips'
     Plug 'Saghen/blink.compat'
 
     Plug 'williamboman/mason.nvim' " to install LSP servers

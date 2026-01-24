@@ -4,7 +4,6 @@ local keymap = {
 }
 
 require("blink.compat").setup({})
-require("cmp_nvim_ultisnips").setup({})
 
 keymap['<C-y>'] = { 'select_and_accept' }
 
@@ -38,13 +37,7 @@ require('blink.cmp').setup({
     },
     keymap = keymap,
     sources = {
-        default = { 'lsp', 'ultisnips', 'buffer' },
-        providers = {
-            ['ultisnips'] = {
-                name = 'ultisnips',
-                module = 'blink.compat.source',
-            },
-        },
+        default = { 'lsp', 'buffer' },
     },
     cmdline = {
         keymap = { preset = 'inherit' },
