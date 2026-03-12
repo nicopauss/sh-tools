@@ -38,6 +38,7 @@ Plug 'rust-lang/rust.vim'
 Plug 'pangloss/vim-javascript'
 Plug 'cespare/vim-toml'
 Plug 'mbbill/undotree'
+Plug 'mjakl/vim-asciidoc'
 
 if has('nvim')
     " It is important to use tagged release otherwise no binaries
@@ -47,6 +48,7 @@ if has('nvim')
 
     Plug 'williamboman/mason.nvim' " to install LSP servers
     Plug 'neovim/nvim-lspconfig' " config for LSP servers
+    Plug 'mfussenegger/nvim-lint'
     if s:use_ale
         Plug 'dense-analysis/ale'
         " Plug 'ycm-core/YouCompleteMe', { 'do': '/usr/bin/python3 ./install.py --clang-completer' }
@@ -94,6 +96,8 @@ if has('nvim')
     lua require('plugins/treesitter')
     lua require('plugins/codecompanion')
     lua require('plugins/dap')
+    lua require('plugins/mason')
+    lua require('plugins/lint')
 endif
 
 " {{{ Various options

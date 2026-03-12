@@ -1,55 +1,31 @@
--- Every server used here must be added in the install script nvim_install.sh
-require("mason").setup()
-vim.lsp.enable('eslint')
-vim.lsp.enable('ts_ls')
-vim.lsp.enable('ruff')
+-- Some LSP servers don't play well with gq, they ignore the textwidth for some
+-- reasons. For those, we need to remove the formatexpr they set. Others such
+-- as bashls, clangd work fine anyway.
+local restore_gq = function(_, bufnr)
+  vim.api.nvim_buf_set_option(bufnr, "formatexpr", "")
+end
 
--- https://github.com/python-lsp/python-lsp-server/blob/develop/CONFIGURATION.md
--- We only use it for pylint and for jedi (enabled by default)
-vim.lsp.config('pylsp', {
-    -- higher than default debounce time because pylint is slow to answer so
-    -- it's important not to flood it
-    flags = {
-        debounce_text_changes = 600,
-    },
-    settings = {
-        pylsp = {
-            plugins = {
-                -- Basic things (autocompletion, renaming etc.)
-                jedi = {
-                    enabled = true,
-                },
-                pylint = {
-                    enabled = false,
-                },
-                -- Disable all other linters
-                pyflakes = {
-                    enabled = false,
-                },
-                autopep8 = {
-                    enabled = false,
-                },
-                flake8 = {
-                    enabled = false,
-                },
-                pycodestyle = {
-                    enabled = false,
-                },
-                mccabe = {
-                    enabled = false,
-                },
-                yapf = {
-                    enabled = false,
-                },
-            },
-        }
-    },
-})
-vim.lsp.enable('pylsp')
+vim.lsp.enable('clangd')
+vim.lsp.config('eslint', { on_attach = restore_gq })
+vim.lsp.enable('eslint')
+vim.lsp.config('ts_ls', { on_attach = restore_gq })
+vim.lsp.enable('ts_ls')
+vim.lsp.config('ruff', { on_attach = restore_gq })
+vim.lsp.enable('ruff')
+vim.lsp.enable('ast_grep')
 vim.lsp.enable('bashls')
 
+vim.lsp.config('ty', {
+    settings = {
+        ty = {
+            diagnosticMode = 'off',
+        },
+    }
+})
+vim.lsp.enable('ty')
+
 -- Rust
-require('lspconfig').rust_analyzer.setup({
+vim.lsp.config.rust_analyzer = {
   settings = {
     ['rust-analyzer'] = {
       cargo = {
@@ -60,9 +36,11 @@ require('lspconfig').rust_analyzer.setup({
           command = "clippy",
           features = "all",
       },
-    }
+    },
   },
-})
+}
+vim.lsp.enable("rust_analyzer")
+
 -- Format Rust files on save using rust-analyzer
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*.rs",
@@ -72,7 +50,9 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 
 -- Clangd
-vim.lsp.config('clangd', {
-    cmd = {"clangd", "--header-insertion=never"}
-})
-vim.lsp.enable('clangd')
+vim.lsp.config.clangd = {
+    cmd = {
+        'clangd',
+        '--header-insertion=never',
+    },
+}

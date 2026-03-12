@@ -16,9 +16,8 @@ au FileType d setlocal textwidth=78
 au BufRead,BufNewFile *.iop setf d
 
 " Javascript
-au FileType javascript,typescript setlocal textwidth=120 colorcolumn=78,120 iskeyword+=$
+au FileType javascript,typescript,typescriptreact setlocal textwidth=120 colorcolumn=79,121 iskeyword+=$
 au BufRead,BufNewFile *.cf setf json
-au BufRead,BufNewFile *.tsx setf typescript
 
 " PHP
 au FileType php setlocal et fo+=ro indentexpr= cin

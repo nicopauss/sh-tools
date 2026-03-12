@@ -28,7 +28,9 @@ map("n", "]w", diagnostic_goto(true, "WARN"), { desc = "Next Warning" })
 map("n", "[w", diagnostic_goto(false, "WARN"), { desc = "Prev Warning" })
 
 -- l like LSP
-map("n", "<leader>lD", vim.diagnostic.open_float)
+map("n", "<leader>lD", function()
+  vim.diagnostic.open_float({ source = true })
+end, { unique = true })
 -- More information of symbol under cursor (e.g.: variable's type)
 map("n", "<leader>lh", vim.lsp.buf.hover)
 map("n", "<leader>li", "<cmd>Telescope lsp_references<cr>")
