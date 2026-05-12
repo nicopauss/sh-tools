@@ -33,7 +33,7 @@ export PS1='\[\e[34;1m\]\u@'\
 '\[\e[32;1m\]\H:'\
 '$(ret=$?; if [ $ret -ne 0 ]; then echo " \[\e[31;7m\]"$ret"\[\e[0m\]"; fi)'\
 '\[\e[31;1m\]$(_bashrc_git_ps1) '\
-'\[\e[0m\]\w'\
+'\[\e[0m\]\w$( [ -n "$QPOD_EXEC" ] && printf " (qpod|%s)" "$(qpod environment tpl-name)" )'\
 '\[\e[31;1m\]\$ '\
 '\[\e[0m\]'
 
@@ -164,6 +164,8 @@ alias makeans='no-stderr build-aenv build-nenv make'
 alias makeds='no-stderr build-denv make'
 alias makers='no-stderr build-renv make'
 alias makeas='no-stderr build-aenv make'
+
+alias qp='pyvenv_deactivate && qpod-shell.sh'
 
 
 function mkdirclean {
