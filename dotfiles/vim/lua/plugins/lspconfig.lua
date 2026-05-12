@@ -49,6 +49,22 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   end,
 })
 
+-- Run ruff fix and format on save via LSP
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.py",
+  callback = function(args)
+    local clients = vim.lsp.get_clients({ bufnr = args.buf, name = "ruff" })
+    if #clients == 0 then
+      return
+    end
+    vim.lsp.buf.code_action({
+      context = { only = { "source.fixAll.ruff" }, diagnostics = {} },
+      apply = true,
+    })
+    vim.lsp.buf.format({ name = "ruff", async = false })
+  end,
+})
+
 -- Clangd
 vim.lsp.config.clangd = {
     cmd = {
