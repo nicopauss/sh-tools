@@ -12,7 +12,7 @@ lint.linters.pylint.args = {
 lint.linters.pylint.append_fname = false
 
 lint.linters_by_ft = {
-  python = { "pylint" },
+--  python = { "pylint" },
   bash = { "shellcheck" },
   shell = { "shellcheck" },
 }
