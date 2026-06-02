@@ -15,6 +15,22 @@ vim.lsp.enable('ruff')
 vim.lsp.enable('ast_grep')
 vim.lsp.enable('bashls')
 
+vim.lsp.config('pyrefly', {
+    on_attach = restore_gq,
+    handlers = {
+        -- Hide HINT messages
+        ["textDocument/publishDiagnostics"] = function(err, result, ctx, config)
+            if result and result.diagnostics then
+                result.diagnostics = vim.tbl_filter(function(diag)
+                    return diag.severity and diag.severity <= vim.diagnostic.severity.INFO
+                end, result.diagnostics)
+            end
+            vim.lsp.handlers["textDocument/publishDiagnostics"](err, result, ctx, config)
+        end,
+    },
+})
+vim.lsp.enable('pyrefly')
+
 vim.lsp.config('ty', {
     settings = {
         ty = {
