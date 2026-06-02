@@ -1,0 +1,39 @@
+# Alacritty configuration
+# Docs: https://alacritty.org/config-alacritty.html
+
+[font]
+normal = { family = "Ubuntu Mono", style = "Medium" }
+size = 9.0
+
+# Black background, white text, muted Tango palette.
+[colors.primary]
+background = "#000000"
+foreground = "#ffffff"
+
+[colors.normal]
+black   = "#2e3436"
+red     = "#cc0000"
+green   = "#4e9a06"
+yellow  = "#c4a000"
+blue    = "#3465a4"
+magenta = "#75507b"
+cyan    = "#06989a"
+white   = "#d3d7cf"
+
+[colors.bright]
+black   = "#555753"
+red     = "#ef2929"
+green   = "#8ae234"
+yellow  = "#fce94f"
+blue    = "#729fcf"
+magenta = "#ad7fa8"
+cyan    = "#34e2e2"
+white   = "#eeeeec"
+
+# Shift+Enter: send the CSI-u sequence so apps (e.g. Claude Code) can tell it
+# apart from Enter. tmux forwards it with extended-keys on. URLs open with
+# Ctrl+click and zoom is Ctrl +/-/0, both Alacritty defaults.
+[[keyboard.bindings]]
+key   = "Enter"
+mods  = "Shift"
+chars = "\u001b[13;2u"

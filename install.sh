@@ -92,6 +92,36 @@ install_tmux()
     e_success "Backing up tmux to '$BACKUP_DIR', installed new one"
 }
 
+install_alacritty()
+{
+    local home_conf="$HOME/.config/alacritty/alacritty.toml"
+    local conf_path="$SH_TOOLS_DIR/dotfiles/alacritty/alacritty.toml"
+    local conf_script="import = [\"$conf_path\"]"
+    local found_str=''
+
+    e_header "Installing alacritty"
+
+    mkdir -p "$HOME/.config/alacritty"
+
+    if [ ! -e "$home_conf" ]; then
+        echo "$conf_script" > "$home_conf"
+        e_success "No previous alacritty config found, installed new one"
+        return 0
+    fi
+
+    found_str=$(grep -F "$conf_script" "$home_conf" 2>/dev/null || echo "")
+
+    if [ -n "$found_str" ]; then
+        e_success "Alacritty already installed"
+        return 0
+    fi
+
+    mkdir -p "$BACKUP_DIR"
+    mv "$home_conf" "$BACKUP_DIR"
+    echo "$conf_script" > "$home_conf"
+    e_success "Backing up alacritty config to '$BACKUP_DIR', installed new one"
+}
+
 install_bashrc()
 {
     local home_bashrc="$HOME/.bashrc"
@@ -158,6 +188,7 @@ main()
     install_script
     install_vimrc
     install_tmux
+    install_alacritty
     install_bashrc
     install_path_scripts
     install_gitconfig
