@@ -55,6 +55,7 @@ fi
 
 if command -v nvim &>/dev/null; then
     alias vim='nvim'
+    alias view='nvim -R'
     export EDITOR='nvim'
 fi
 
