@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export Z_MEMORY_FACTOR=5
+export Z_TAG_OR=
+export Z_TAG_SKIP="upgrade wip web perf slow"
+export Z_TIME_FACTOR=5
+exec "$@"
