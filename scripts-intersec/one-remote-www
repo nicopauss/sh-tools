@@ -1,0 +1,34 @@
+#!/bin/sh -eu
+
+# shellcheck disable=SC2155
+
+killsub() {
+    kill "$1" 2>/dev/null
+    wait "$1" 2>/dev/null
+}
+
+if [ "$#" -lt 2 ]; then
+    echo "usage: $0 <Z_WWW_PREFIX> <cmd> [args...]"
+    exit 1
+fi
+
+vm_serv=vmdev-003.corp
+redirect_port=8087
+
+export Z_SELENIUM_HOST=kirin.corp
+export Z_WWW_BROWSER=Remote
+export Z_WWW_HOST="iltp-042.$vm_serv:$redirect_port"
+export Z_WWW_PREFIX="$1"
+shift
+
+ssh -T -R "0.0.0.0:$redirect_port:127.0.0.1:80" "$vm_serv" \
+    "sleep 1000000000000000000" &
+ssh_pid=$!
+trap 'killsub ${ssh_pid}; exit' INT TERM EXIT
+
+params=""
+for param in "$@"
+do
+  params="${params} \"${param}\""
+done
+eval "$params"
