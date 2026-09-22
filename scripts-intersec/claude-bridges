@@ -1,0 +1,262 @@
+#!/bin/bash
+#
+# claude-bridges -- start/stop the host-side helpers used by Claude Code:
+#
+#   * redmine-bridge         : UNIX-socket bridge for the /redmine skill; it
+#                              has two versions with a separate start each:
+#                              read-only (target "redmine") and read-write
+#                              (target "redmine-write")
+#   * sandbox-bridge-host.py : host<->sandbox relay for @web behave tests
+#   * selenium-grid          : docker-compose Selenium grid for --grid runs
+#
+# Usage: claude-bridges [start|stop|restart|status] [<target>]
+#   action defaults to start; target defaults to all.
+#   targets: redmine | redmine-write | sandbox | grid | all
+#   "all" starts the read-only redmine bridge only. The read-write bridge is
+#   a capability upgrade with a TTL, so you must ask for it by name. "stop
+#   all" and "status all" still cover it; "restart all" does not touch it.
+#   e.g.  claude-bridges start redmine        # read-only redmine bridge
+#         claude-bridges start redmine-write  # read-write redmine bridge
+#         claude-bridges stop sandbox         # only the sandbox bridge
+#         claude-bridges start grid           # only the selenium grid
+#         claude-bridges start                # redmine (read-only) + sandbox + grid
+#
+# Environment:
+#   REDMINE_WRITE_TTL   minutes the read-write bridge lives (bridge default
+#                       applies when unset; the bridge caps the value)
+
+set -euo pipefail
+
+REDMINE_KEY_FILE="$HOME/.config/secrets/redmine.key"
+# Both redmine bridges write their own pidfile and socket, so we track them
+# through those paths instead of a pidfile of our own.
+REDMINE_RO_PIDFILE="/tmp/claude/redmine-bridge.pid"
+REDMINE_RO_SOCK="/tmp/claude/redmine.sock"
+REDMINE_WR_PIDFILE="/tmp/claude/redmine-write.pid"
+REDMINE_WR_SOCK="/tmp/claude/redmine-write.sock"
+REDMINE_WR_LOG="$HOME/.cache/redmine-write.log"
+REDMINE_WRITE_TTL="${REDMINE_WRITE_TTL:-120}"
+REDMINE_MAX_POLLS=40                       # readiness poll attempts (~0.25s each)
+SANDBOX_READY_TIMEOUT=60   # sandbox bridge can take a while to come up
+GRID_BASE="$HOME/dev/tools/selenium-grid/docker-compose.yml"
+GRID_OVERRIDE="$HOME/.config/selenium-grid/docker-compose.override.yml"
+
+msg() { printf '%s\n' "$*"; }
+err() { printf 'bridges: %s\n' "$*" >&2; }
+
+# {{{ redmine bridges -- read-only and read-write, one start each
+
+# The two versions are separate processes with their own socket and pidfile.
+# They can run at the same time, so every helper takes the pidfile as $1.
+# `redmine-bridge --stop` always stops both, so we signal the pid ourselves.
+
+bridge_pid()     { if [ -f "$1" ]; then cat "$1" 2>/dev/null; fi; }
+bridge_running() { local p; p="$(bridge_pid "$1")"; [ -n "$p" ] && kill -0 "$p" 2>/dev/null; }
+
+# Read the API key, or fail with a message. $1 is the label to report.
+redmine_key() {
+    if [ ! -r "$REDMINE_KEY_FILE" ]; then
+        err "redmine key not readable ($REDMINE_KEY_FILE); skipping $1"
+        return 1
+    fi
+    cat "$REDMINE_KEY_FILE"
+}
+
+# Stop the bridge whose pid is in pidfile $1. $2 is the label to report.
+stop_bridge() {
+    local pidfile="$1" label="$2" p
+    if ! bridge_running "$pidfile"; then
+        msg "$label: not running"
+        return 0
+    fi
+    p="$(bridge_pid "$pidfile")"
+    kill "$p" 2>/dev/null || true
+    for _ in $(seq 1 10); do bridge_running "$pidfile" || break; sleep 0.3; done
+    if bridge_running "$pidfile"; then kill -9 "$p" 2>/dev/null || true; fi
+    msg "$label: stopped"
+}
+
+# The read-only bridge is a daemon: --bg detaches, waits for its socket, logs
+# to its own file and reports the result. Nothing to poll on our side.
+start_redmine() {
+    local key
+    if bridge_running "$REDMINE_RO_PIDFILE"; then
+        msg "redmine-bridge (read-only): already running (pid $(bridge_pid "$REDMINE_RO_PIDFILE"))"
+        return 0
+    fi
+    key="$(redmine_key 'redmine-bridge (read-only)')" || return 1
+    REDMINE_API_KEY="$key" redmine-bridge --bg
+}
+
+stop_redmine() { stop_bridge "$REDMINE_RO_PIDFILE" 'redmine-bridge (read-only)'; }
+
+# Write mode is foreground-only and TTL-bounded, so we put it in the
+# background ourselves and poll until its socket is up.
+start_redmine_write() {
+    local key child i=0 opts=()
+    if bridge_running "$REDMINE_WR_PIDFILE"; then
+        msg "redmine-bridge (write): already running (pid $(bridge_pid "$REDMINE_WR_PIDFILE"))"
+        return 0
+    fi
+    key="$(redmine_key 'redmine-bridge (write)')" || return 1
+    if [ -n "$REDMINE_WRITE_TTL" ]; then opts+=(--ttl "$REDMINE_WRITE_TTL"); fi
+    mkdir -p "$(dirname "$REDMINE_WR_LOG")"
+    REDMINE_API_KEY="$key" \
+        nohup redmine-bridge -w "${opts[@]}" >>"$REDMINE_WR_LOG" 2>&1 &
+    child=$!
+    # Poll for readiness (socket up) up to REDMINE_MAX_POLLS, returning as
+    # soon as it is ready; bail out early if the process dies.
+    until [ -S "$REDMINE_WR_SOCK" ] && bridge_running "$REDMINE_WR_PIDFILE"; do
+        if ! kill -0 "$child" 2>/dev/null; then
+            err "redmine-bridge (write): exited during startup (see $REDMINE_WR_LOG)"
+            return 1
+        fi
+        i=$((i + 1))
+        if [ "$i" -ge "$REDMINE_MAX_POLLS" ]; then
+            err "redmine-bridge (write): socket $REDMINE_WR_SOCK not up after $REDMINE_MAX_POLLS polls (see $REDMINE_WR_LOG)"
+            return 1
+        fi
+        sleep 0.25
+    done
+    msg "redmine-bridge (write): started (pid $child, log $REDMINE_WR_LOG)"
+    if [ -n "$REDMINE_WRITE_TTL" ]; then
+        msg "redmine-bridge (write): expires after $REDMINE_WRITE_TTL min"
+    else
+        msg "redmine-bridge (write): expires on the bridge default TTL"
+    fi
+}
+
+stop_redmine_write() { stop_bridge "$REDMINE_WR_PIDFILE" 'redmine-bridge (write)'; }
+
+# }}}
+# {{{ sandbox bridge -- self-managed via its own --bg/--stop/--check
+
+start_sandbox() {
+    msg "sandbox-bridge-host: starting..."
+    sandbox-bridge-host.py --bg
+    local i=0
+    until sandbox-bridge-host.py --check >/dev/null 2>&1; do
+        i=$((i + 1))
+        if [ "$i" -ge "$SANDBOX_READY_TIMEOUT" ]; then
+            err "sandbox-bridge-host: not ready after ${SANDBOX_READY_TIMEOUT}s"
+            sandbox-bridge-host.py --check || true
+            return 1
+        fi
+        sleep 1
+    done
+    msg "sandbox-bridge-host: ready"
+}
+
+stop_sandbox() {
+    sandbox-bridge-host.py --stop || true
+    msg "sandbox-bridge-host: stopped"
+}
+
+# }}}
+# {{{ selenium grid -- docker compose (base + optional local override)
+
+# docker compose with the base file, plus the local override when present.
+grid_compose() {
+    local args=(-f "$GRID_BASE")
+    if [ -f "$GRID_OVERRIDE" ]; then args+=(-f "$GRID_OVERRIDE"); fi
+    docker compose "${args[@]}" "$@"
+}
+
+start_grid() {
+    if [ ! -f "$GRID_BASE" ]; then
+        err "selenium-grid: compose not found ($GRID_BASE); skipping grid"
+        return 1
+    fi
+    msg "selenium-grid: starting (docker compose up -d)..."
+    grid_compose up -d
+    msg "selenium-grid: up"
+}
+
+stop_grid() {
+    if [ ! -f "$GRID_BASE" ]; then
+        msg "selenium-grid: compose not found; nothing to stop"
+        return 0
+    fi
+    msg "selenium-grid: stopping (docker compose down)..."
+    grid_compose down
+    msg "selenium-grid: down"
+}
+
+status_grid() {
+    if [ ! -f "$GRID_BASE" ]; then
+        msg "selenium-grid: compose not found"
+        return 0
+    fi
+    grid_compose ps || true
+}
+
+# }}}
+
+# Report on the bridge with pidfile $1 and socket $2. $3 is the label.
+status_bridge() {
+    if bridge_running "$1"; then
+        msg "$3: running (pid $(bridge_pid "$1"), socket $2)"
+    else
+        msg "$3: not running"
+    fi
+}
+
+status_redmine()       { status_bridge "$REDMINE_RO_PIDFILE" "$REDMINE_RO_SOCK" 'redmine-bridge (read-only)'; }
+status_redmine_write() { status_bridge "$REDMINE_WR_PIDFILE" "$REDMINE_WR_SOCK" 'redmine-bridge (write)'; }
+status_sandbox()       { sandbox-bridge-host.py --check || true; }
+
+usage() {
+    err "usage: ${0##*/} [start|stop|restart|status] [redmine|redmine-write|sandbox|grid|all]"
+    exit 2
+}
+
+# Run an action against the selected target(s). A failure of one component
+# never prevents acting on the others.
+do_action() {
+    case "$1" in
+        start)
+            if [ "$do_redmine"    = 1 ]; then start_redmine        || true; fi
+            if [ "$do_redmine_wr" = 1 ]; then start_redmine_write  || true; fi
+            if [ "$do_sandbox"    = 1 ]; then start_sandbox        || true; fi
+            if [ "$do_grid"       = 1 ]; then start_grid           || true; fi ;;
+        stop)
+            if [ "$do_redmine"    = 1 ]; then stop_redmine         || true; fi
+            if [ "$do_redmine_wr" = 1 ]; then stop_redmine_write   || true; fi
+            if [ "$do_sandbox"    = 1 ]; then stop_sandbox         || true; fi
+            if [ "$do_grid"       = 1 ]; then stop_grid            || true; fi ;;
+        status)
+            if [ "$do_redmine"    = 1 ]; then status_redmine;       fi
+            if [ "$do_redmine_wr" = 1 ]; then status_redmine_write; fi
+            if [ "$do_sandbox"    = 1 ]; then status_sandbox;       fi
+            if [ "$do_grid"       = 1 ]; then status_grid;          fi ;;
+    esac
+}
+
+action="${1:-start}"
+target="${2:-all}"
+
+# "all" leaves out redmine-write on purpose: write mode is a capability
+# upgrade, so you must name it. Its status still shows up with "all".
+do_redmine=0; do_redmine_wr=0; do_sandbox=0; do_grid=0
+case "$target" in
+    redmine)       do_redmine=1 ;;
+    redmine-write) do_redmine_wr=1 ;;
+    sandbox)       do_sandbox=1 ;;
+    grid)          do_grid=1 ;;
+    all)           do_redmine=1; do_sandbox=1; do_grid=1 ;;
+    *) usage ;;
+esac
+
+# ... but "all" must still stop it and report it: a live write socket must
+# never stay hidden or survive a full stop.
+case "$target:$action" in
+    all:stop|all:status|all:check) do_redmine_wr=1 ;;
+esac
+
+case "$action" in
+    start)        do_action start ;;
+    stop)         do_action stop ;;
+    restart)      do_action stop; do_action start ;;
+    status|check) do_action status ;;
+    *) usage ;;
+esac
