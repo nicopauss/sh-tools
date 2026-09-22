@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# teelog - run a command, showing its stdout on the terminal while writing
+#          both stdout and stderr to a log file.
+#
+# Usage: teelog [-a] [-e] [-L] LOGFILE COMMAND [ARG...]
+#
+# Exits with COMMAND's status, not tee's. Works as a standalone script, or
+# defines teelog as a shell function if you source it.
+
+_teelog_usage() {
+    cat <<'EOF'
+Usage: teelog [-a] [-e] [-L] LOGFILE COMMAND [ARG...]
+
+  -a  append to LOGFILE instead of truncating it
+  -e  also echo stderr to the terminal (default: stdout only)
+  -L  unbuffer COMMAND's output, so stdout is not held back (needs stdbuf)
+  -h  show this help
+EOF
+}
+
+teelog() {
+    local append=false show_stderr=false unbuf=false
+    local OPTIND=1 opt
+
+    while getopts ':aeLh' opt; do
+        case $opt in
+            a) append=true ;;
+            e) show_stderr=true ;;
+            L) unbuf=true ;;
+            h) _teelog_usage; return 0 ;;
+            *) printf 'teelog: invalid option: -%s\n' "$OPTARG" >&2
+               _teelog_usage >&2
+               return 2 ;;
+        esac
+    done
+    shift $((OPTIND - 1))
+
+    if (( $# < 2 )); then
+        _teelog_usage >&2
+        return 2
+    fi
+
+    local log=$1
+    shift
+
+    local -a pre=()
+    if [[ $unbuf == true ]]; then
+        if ! command -v stdbuf >/dev/null 2>&1; then
+            echo 'teelog: -L needs stdbuf (GNU coreutils)' >&2
+            return 2
+        fi
+        pre=(stdbuf -oL)
+    fi
+
+    # Open the log now, so a bad path fails before COMMAND runs.
+    if [[ $append == true ]]; then
+        : >>"$log" || return 2
+    else
+        : >"$log" || return 2
+    fi
+
+    local rc
+    if [[ $show_stderr == true ]]; then
+        # Both streams merge into tee, which writes the log and the terminal.
+        "${pre[@]}" "$@" 2>&1 | tee -a "$log"
+        rc=${PIPESTATUS[0]}
+    else
+        # stdout goes through tee (terminal + log); stderr goes straight to
+        # the log on fd 3. Both writers open the log in append mode, so every
+        # write lands at the current end of file and neither clobbers the
+        # other. tee's own stdout is left alone, so redirecting or piping
+        # teelog's output behaves exactly as you would expect.
+        { "${pre[@]}" "$@" 2>&3 | tee -a "$log"
+          rc=${PIPESTATUS[0]}
+        } 3>>"$log"
+    fi
+
+    return "$rc"
+}
+
+# Executed directly? Run it. Sourced? Just define the function.
+if [[ ${BASH_SOURCE[0]} == "${0}" ]]; then
+    teelog "$@"
+fi
