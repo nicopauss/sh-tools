@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+#
+# xclip — Wayland-aware wrapper.
+#
+# Problem this solves
+# -------------------
+# Under XWayland the real /usr/bin/xclip succeeds (exit 0) but only writes the
+# X11 (XWayland) clipboard. Native Wayland apps read the *Wayland* clipboard, so
+# the copied text never lands where you can paste it. Tools like tuicr that do
+# "use xclip, fall back to wl-copy only if xclip fails" therefore never trigger
+# their fallback — xclip didn't fail, it just wrote the wrong clipboard.
+#
+# What this wrapper does
+# ----------------------
+#   * Wayland session  -> translate the xclip call into the equivalent
+#                         wl-copy / wl-paste call (so the Wayland clipboard is
+#                         actually populated).
+#   * pure X11 session -> exec the real xclip unchanged.
+#
+# It lives in ~/sh-tools/scripts, which precedes /usr/bin in PATH, so anything
+# that shells out to "xclip" by name (tuicr, vim, etc.) picks this up
+# transparently. No need to patch the callers.
+
+set -euo pipefail
+
+is_wayland() {
+    [ -n "${WAYLAND_DISPLAY:-}" ] || [ "${XDG_SESSION_TYPE:-}" = wayland ]
+}
+
+# Locate the real xclip, skipping this wrapper to avoid infinite recursion.
+real_xclip() {
+    local self dir cand
+    self=$(readlink -f "$0")
+    local IFS=:
+    for dir in $PATH; do
+        cand="$dir/xclip"
+        [ -x "$cand" ] && [ ! -d "$cand" ] || continue
+        [ "$(readlink -f "$cand")" = "$self" ] && continue
+        printf '%s\n' "$cand"
+        return 0
+    done
+    return 1
+}
+
+if ! is_wayland; then
+    if real=$(real_xclip); then
+        exec "$real" "$@"
+    fi
+    echo "xclip (wrapper): real xclip not found in PATH" >&2
+    exit 127
+fi
+
+# --- Wayland: translate xclip arguments into wl-copy / wl-paste ------------
+mode=in              # in = copy (default), out = paste
+selection=clipboard  # clipboard | primary | secondary
+target=""            # -t/-target  ->  --type
+rmlastnl=0           # -r/-rmlastnl ->  wl-copy --trim-newline
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -o|-out|-output)          mode=out ;;
+        -i|-in|-input)            mode=in ;;
+        -sel|-select|-selection)
+            shift
+            case "${1:-}" in
+                p*|P*) selection=primary ;;
+                s*|S*) selection=secondary ;;
+                *)     selection=clipboard ;;   # clipboard / cut buffer / unknown
+            esac
+            ;;
+        -t|-target)               shift; target="${1:-}" ;;
+        -r|-rmlastnl)             rmlastnl=1 ;;
+        -d|-display)              shift ;;       # no Wayland equivalent; ignore arg
+        -l|-loops)                shift ;;       # ignore loop count
+        -f|-filter|-silent|-quiet|-verbose|-noutf8) ;;  # no-ops here
+        -version)
+            if real=$(real_xclip); then exec "$real" -version; fi
+            echo "xclip wrapper (Wayland -> wl-clipboard)"; exit 0 ;;
+        -h|-help)
+            if real=$(real_xclip); then exec "$real" -help; fi
+            echo "usage: xclip [-i|-o] [-selection clipboard|primary] [-t target]"
+            exit 0 ;;
+        --) shift; break ;;
+        *) ;;   # ignore unknown args / filenames (file input is rarely used here)
+    esac
+    shift || true
+done
+
+wl_args=()
+[ "$selection" = primary ] && wl_args+=(--primary)
+[ -n "$target" ] && wl_args+=(--type "$target")
+
+if [ "$mode" = out ]; then
+    # xclip -o emits the raw stored bytes; --no-newline avoids wl-paste's added
+    # trailing newline, which matches how xclip -o is normally consumed.
+    exec wl-paste --no-newline "${wl_args[@]}"
+else
+    [ "$rmlastnl" = 1 ] && wl_args+=(--trim-newline)
+    # wl-copy reads stdin, then forks a daemon to serve the selection and the
+    # foreground process exits 0 — so the caller (tuicr) sees success.
+    exec wl-copy "${wl_args[@]}"
+fi
