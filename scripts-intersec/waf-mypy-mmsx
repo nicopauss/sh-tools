@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+"""Run mypy on every file in the mmsx repo that opts into type checking.
+
+Selection
+---------
+A file is checked iff it is tracked by git, matches one of
+``*.py``, ``*.pyi``, ``wscript*`` (at any depth), and contains the marker
+``mypy: ignore-errors`` (with or without space). Despite the marker's
+name, in mmsx its presence is the signal that the file *should* be
+type-checked by this script (the marker tells the global mypy run to
+skip it so we can run it explicitly here).
+
+Behaviour
+---------
+- Must be run from inside the mmsx git working tree (any subdirectory).
+- Each file is invoked with a separate ``mypy`` call from the repo root.
+- Files matching ``mypy.ini``'s ``exclude`` regex are skipped (mypy itself
+  ignores ``exclude`` for files passed explicitly on the command line).
+- Output is streamed live so progress is visible.
+- All files are always processed; one failure does not abort the run.
+
+Output
+------
+- For each file: a ``== i/N <abs-path>`` header followed by mypy output.
+- At the end, a ``== Summary`` section:
+  - If all passed: ``All N files passed.`` and exit 0.
+  - Else: the list of failing files, then for each failing file a
+    ``--- <abs-path> ---`` block with the captured stdout+stderr, and
+    exit 1.
+
+Usage
+-----
+    waf-mypy-mmsx [-f]
+
+With ``-f``, skip the marker check and run mypy on every listed file.
+Requires ``git`` and ``mypy`` on PATH. Python 3.6+.
+"""
+import configparser
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+
+def load_mypy_exclude(root):
+    """Return a compiled regex for ``exclude`` in ``mypy.ini``, or None.
+
+    mypy itself ignores ``exclude`` when files are passed explicitly on the
+    command line; this script honors it so test fixtures listed there (e.g.
+    intentionally-invalid Python files) are skipped under ``-f`` too.
+    """
+    cfg_path = Path(root) / 'mypy.ini'
+    if not cfg_path.exists():
+        return None
+    parser = configparser.ConfigParser()
+    try:
+        parser.read(cfg_path)
+    except configparser.Error:
+        return None
+    raw = parser.get('mypy', 'exclude', fallback='').strip()
+    if not raw:
+        return None
+    parts = [p.strip() for p in raw.split(',') if p.strip()]
+    if not parts:
+        return None
+    try:
+        return re.compile('|'.join(parts))
+    except re.error:
+        return None
+
+
+def main() -> int:
+    force = '-f' in sys.argv[1:]
+
+    root = subprocess.check_output(
+        ['git', 'rev-parse', '--show-toplevel'],
+    ).decode().strip()
+
+    exclude_re = load_mypy_exclude(root)
+
+    ls = subprocess.check_output(
+        ['git', 'ls-files',
+         '*.py', '**/*.py',
+         '*.pyi', '**/*.pyi',
+         'wscript*', '**/wscript*'],
+    ).decode().splitlines()
+
+    mypy_files = []
+    for rel in ls:
+        if exclude_re is not None and exclude_re.search(rel):
+            continue
+        full = Path.cwd() / rel
+        if force:
+            mypy_files.append(str(full.resolve()))
+            continue
+        try:
+            with open(full, encoding='utf-8', errors='replace') as fp:
+                for line in fp:
+                    if ('mypy: ignore-errors' in line
+                            or 'mypy:ignore-errors' in line):
+                        mypy_files.append(str(full.resolve()))
+                        break
+        except OSError:
+            pass
+
+    nb = len(mypy_files)
+    failures = []
+
+    for i, path in enumerate(mypy_files, 1):
+        print('== {}/{} {}'.format(i, nb, path), flush=True)
+        result = subprocess.run(
+            ['mypy', path],
+            cwd=root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+        )
+        output = result.stdout.decode('utf-8', errors='replace')
+        sys.stdout.write(output)
+        sys.stdout.flush()
+        if result.returncode != 0:
+            failures.append((path, output))
+
+    print()
+    print('== Summary')
+    if not failures:
+        print('All {} files passed.'.format(nb))
+        return 0
+    print('{}/{} files failed:'.format(len(failures), nb))
+    for path, _ in failures:
+        print('  - {}'.format(path))
+    for path, output in failures:
+        print()
+        print('--- {} ---'.format(path))
+        print(output.rstrip())
+    return 1
+
+
+if __name__ == '__main__':
+    sys.exit(main())
