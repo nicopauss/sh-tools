@@ -1,0 +1,6 @@
+. /home/pauss/.bashrc
+. /home/pauss/sh-tools/dotfiles/bashrc
+
+#export CLAUDE_CONFIG_DIR=/home/pauss/.pauss-claude
+
+export SKIP_HTTPD_SETUP=1
