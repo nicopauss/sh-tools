@@ -30,6 +30,14 @@ magenta = "#ad7fa8"
 cyan    = "#34e2e2"
 white   = "#eeeeec"
 
+# F4: send the legacy sequence that xterm-256color terminfo defines as kf4.
+# With the Kitty keyboard protocol on, which herdr turns on, F4 becomes CSI S.
+# That is also the ANSI Scroll Up sequence, and it does not reach vim through
+# herdr. The legacy form does.
+[[keyboard.bindings]]
+key   = "F4"
+chars = "\u001bOS"
+
 # Shift+Enter: send the CSI-u sequence so apps (e.g. Claude Code) can tell it
 # apart from Enter. tmux forwards it with extended-keys on. URLs open with
 # Ctrl+click and zoom is Ctrl +/-/0, both Alacritty defaults.
