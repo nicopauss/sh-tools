@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# apt install dbus-x11 libusb-0.1-4 sane simple-scan vim sudo
+# https://support.ricoh.com/bb/pub_e/dr_ut_e/0001294/0001294703/V100/r75389L2.gz
+
+#DOCKER_IMAGE="debian:10"
+#DOCKER_IMAGE="ubuntu:12.04"
+DOCKER_IMAGE="ricoh-simple-scan-deb10"
+#COMMAND="/usr/bin/simple-scan"
+COMMAND="/bin/bash"
+
+HOME_DIR="$HOME/.local/share/ricoh-simple-scan-home:$HOME"
+DESKTOP_DIR="$HOME/Desktop:$HOME/Desktop"
+
+xhost +
+
+exec docker run -it --rm \
+    --privileged -v /dev/bus/usb:/dev/bus/usb \
+    --net=host --ipc=host -e DISPLAY="$DISPLAY" \
+    -v /tmp/.X11-unix:/tmp/.X11-unix --env="QT_X11_NO_MITSHM=1" \
+    -v "$HOME_DIR" \
+    -v "$DESKTOP_DIR" \
+    -v /etc/passwd:/etc/passwd:ro -v /etc/shadow:/etc/shadow:ro \
+    -v /etc/group:/etc/group:ro \
+    -v /etc/sudoers:/etc/sudoers:ro \
+    -v /etc/sudoers.d:/etc/sudoers.d:ro \
+    "$DOCKER_IMAGE" \
+    "$COMMAND"
+    #-u "$(id -u "${USER}"):$(id -g "${USER}")" \
